@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-nltk.download()
+# nltk.download()
 
 class GoogleCrawler():
     
@@ -51,11 +51,12 @@ class GoogleCrawler():
 #     qdr:m (past month)
 #     qdr:y (past year)
     def google_search(self,query,timeline='',page='0'):
-        url = self.url + query + '&tbs={timeline}&start={page}'.format(timeline=timeline,page=page)
+        url = self.url + query + '&hl=en&tbs={timeline}&start={page}'.format(timeline=timeline,page=page)
         print('[Check][URL] URL : {url}'.format(url=url))
-        response = self.get_source(self.url + query)
+        response = self.get_source(url)
         return self.parse_googleResults(response)
     # Google Search Result Parsing
+
     def parse_googleResults(self,response):
 
         css_identifier_result = "tF2Cxc"
@@ -86,6 +87,13 @@ class GoogleCrawler():
         return orignal_text
     
     def word_count(self, text):
+        if self.is_contains_chinese(text):
+            counts = self.word_count_ch(text)
+        else:
+            counts = self.word_count_en(text)
+        return counts
+    
+    def word_count_en(self, text):
         counts = dict()
         stop_words = set(stopwords.words('english'))
         words = word_tokenize(text)
@@ -97,40 +105,66 @@ class GoogleCrawler():
                 else:
                     counts[word] = 1
         return counts
-    def get_wordcount_json(self,whitelist , dict_data):
+
+    def word_count_ch(self, text):
+        counts = dict()
+        import jieba
+        jieba.enable_paddle()# 启动paddle模式。 0.40版之后开始支持，早期版本不支持
+        words = jieba.cut(text, cut_all=False)
+        # print(", ".join(words))
+        for word in words:
+            if word in counts:
+                counts[word] += 1
+            else:
+                counts[word] = 1
+        print(text)
+        print(counts)
+        return counts
+
+    def get_wordcount_json(self, whitelist , dict_data):
         data_array = []
         for i in whitelist:
-            json_data = {
-                'Date' : 'Week1',
-                'Company' : i , 
-                'Count' : dict_data[i]
-            }
-            data_array.append(json_data)
+            if i in dict_data:
+                json_data = {
+                    'Date' : 'Week1',
+                    'Company' : i , 
+                    'Count' : dict_data[i]
+                }
+                data_array.append(json_data)
+            else:
+                json_data = {
+                    'Date' : 'Week1',
+                    'Company' : i , 
+                    'Count' : 0
+                }
+                data_array.append(json_data)
         return data_array
+
     def jsonarray_toexcel(self,data_array):
         df = pd.DataFrame(data=data_array)
         df.to_excel('result.xlsx' , index=False)
         return
     
-
-def main(querys):
-    for query in querys:
-        uery = "TSMC ASML"
-        crawler = GoogleCrawler()
-        results = crawler.google_search(query , 'qdr:w' , '10')
-        print(results[:3])
-        Target_URL = 'https://taipeitimes.com/News/biz/archives/2022/01/20/2003771688'
-        response = crawler.get_source(Target_URL)
-        soup = crawler.html_parser(response.text)
-        orignal_text = crawler.html_getText(soup)
-        print(orignal_text[:100])
-        result_wordcount = crawler.word_count(orignal_text)
-        result_wordcount
-        whitelist = ['ASML' , 'Intel']
-        end_result = crawler.get_wordcount_json(whitelist , result_wordcount)
-        print(end_result)
-        crawler.jsonarray_toexcel(end_result)
-        print(query, 'Excel is OK')
-
+    def is_contains_chinese(self, strs):
+        for _char in strs:
+            if '\u4e00' <= _char <= '\u9fa5':
+                return True
+        return False
+    
 if __name__ == "__main__":
-    main()
+    query = "TSMC ASML"
+    crawler = GoogleCrawler()
+    results = crawler.google_search(query , 'qdr:w' , '10')
+    print(results[:3])
+    Target_URL = 'https://taipeitimes.com/News/biz/archives/2022/01/20/2003771688'
+    response = crawler.get_source(Target_URL)
+    soup = crawler.html_parser(response.text)
+    orignal_text = crawler.html_getText(soup)
+    print(orignal_text[:100])
+    result_wordcount = crawler.word_count(orignal_text)
+    result_wordcount
+    whitelist = ['ASML' , 'Intel']
+    end_result = crawler.get_wordcount_json(whitelist , result_wordcount)
+    print(end_result)
+    crawler.jsonarray_toexcel(end_result)
+    print('Excel is OK')
