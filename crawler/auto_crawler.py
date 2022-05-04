@@ -1,7 +1,7 @@
 from crawler_sample import GoogleCrawler
 import pymongo
 from pymongo.errors import ConnectionFailure
-
+from tqdm import tqdm
 class AutoCrawler():
     def __init__(self, db_url):
         self.crawler = GoogleCrawler()
@@ -12,6 +12,7 @@ class AutoCrawler():
         self.mydb = self.dbclient["crawlerdb"]
         self.mycol = self.mydb[self.colName]
 
+        self.url_count = '10'
         # dblist = self.dbclient.list_database_names()
         # print("dblist ",  dblist)
         # if self.dbName in dblist:
@@ -23,7 +24,7 @@ class AutoCrawler():
         # print("=============")
 
     def getURL(self, query)-> list:
-        results = self.crawler.google_search(query , 'qdr:w' , '10')
+        results = self.crawler.google_search(query , 'qdr:w' , self.url_count)
         print(results[:3])
         return results
 
@@ -45,7 +46,7 @@ class AutoCrawler():
     def run(self, keywords):
         for query, whitelist in keywords.items():
             results = self.getURL(query)
-            for result in results:
+            for result in tqdm(results):
                 url = result["link"]
                 orignal_text = self.getTextbyURL(url)
                 end_results = self.countKeyWord(whitelist, orignal_text)
@@ -58,15 +59,19 @@ class AutoCrawler():
 
     def sentToDb(self, keywords_count_data):
         collist = self.mydb.list_collection_names()
-        print(collist)
-        if self.colName in collist:   # 判断 sites 集合是否存在
+        # print(collist)
+        if self.colName in collist:
             # keywords_count_data = { "Date": "week1", "Company": "TSMC", "Count": "1" }
             x = self.mycol.insert_one(keywords_count_data)
-            x = self.mycol.mycol.find_one()
-            print(x)
+            # x = self.mycol.mycol.find_one()
+            # print(x)
 
 if __name__ == "__main__":
-    keywords = {"TSMC ASML": ['ASML' , 'Intel'], "SUMCO", ['SUMCO', ], "Applied Material", ["Applied Material",]}
+    keywords = {
+        "TSMC ASML": ['ASML' , 'Intel'],
+        "SUMCO": ['SUMCO', ],
+        "Applied Material": ["Applied Material",]
+    }
     db_url = "mongodb://172.17.0.7:27017/"
     auto_crawler = AutoCrawler(db_url)
     auto_crawler.run(keywords)
