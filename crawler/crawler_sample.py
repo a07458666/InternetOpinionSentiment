@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from nltk.tokenize import MWETokenizer
+import paddle
 # nltk.download()
 
 class GoogleCrawler():
@@ -87,6 +89,7 @@ class GoogleCrawler():
         return orignal_text
     
     def word_count(self, text):
+        text = text.lower()
         if self.is_contains_chinese(text):
             counts = self.word_count_ch(text)
         else:
@@ -97,6 +100,8 @@ class GoogleCrawler():
         counts = dict()
         stop_words = set(stopwords.words('english'))
         words = word_tokenize(text)
+        tokenizer = MWETokenizer([('applied', 'materials'), ('applied', 'material')], separator=' ')
+        words = tokenizer.tokenize(words)
         #words = text.replace(',','').split()
         for word in words:
             if word not in stop_words:
@@ -109,7 +114,9 @@ class GoogleCrawler():
     def word_count_ch(self, text):
         counts = dict()
         import jieba
+        paddle.enable_static()  # 我的版本需要加這個才能work?
         jieba.enable_paddle()# 启动paddle模式。 0.40版之后开始支持，早期版本不支持
+        jieba.load_userdict('config/custom_dict.txt')
         words = jieba.cut(text, cut_all=False)
         # print(", ".join(words))
         for word in words:
@@ -156,14 +163,16 @@ if __name__ == "__main__":
     crawler = GoogleCrawler()
     results = crawler.google_search(query , 'qdr:w' , '10')
     print(results[:3])
-    Target_URL = 'https://taipeitimes.com/News/biz/archives/2022/01/20/2003771688'
+    # Target_URL = 'https://taipeitimes.com/News/biz/archives/2022/01/20/2003771688'
+    Target_URL = 'https://udn.com/news/story/7240/6046136'  # 測試中文新聞
     response = crawler.get_source(Target_URL)
     soup = crawler.html_parser(response.text)
     orignal_text = crawler.html_getText(soup)
     print(orignal_text[:100])
     result_wordcount = crawler.word_count(orignal_text)
     result_wordcount
-    whitelist = ['ASML' , 'Intel']
+    # whitelist = ['ASML' , 'Intel']
+    whitelist = ['asml' , 'intel', '艾司摩爾', '台積電', 'tsmc']
     end_result = crawler.get_wordcount_json(whitelist , result_wordcount)
     print(end_result)
     crawler.jsonarray_toexcel(end_result)
