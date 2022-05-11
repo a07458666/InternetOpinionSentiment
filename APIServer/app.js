@@ -4,6 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+const mongoose = require('mongoose');
+
 var apiRouter = require('./routes/api');
 
 var app = express();
@@ -35,5 +37,8 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+// mongoose setup
+mongoose.Promise = global.Promise;
 
 module.exports = app;

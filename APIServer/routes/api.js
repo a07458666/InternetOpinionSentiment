@@ -14,11 +14,11 @@ router.get('/getkeyword', function(req, res, next) {
 });
 
 router.get('/getkeyword/:startTime', function(req, res, next) {
-  res.json(db.getkeyword(req.params.startTime, null));
+  db.getkeyword(req.params.startTime, null).then(ret => {res.json(ret);});
 });
 
 router.get('/getkeyword/:startTime/:endTime', function(req, res, next) {
-  res.json(db.getkeyword(req.params.startTime, req.params.endTime));
+  db.getkeyword(req.params.startTime, req.params.endTime).then(ret => {res.json(ret);});
 });
 
 module.exports = router;
