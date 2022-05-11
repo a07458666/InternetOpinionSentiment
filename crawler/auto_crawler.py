@@ -2,14 +2,16 @@ from crawler_sample import GoogleCrawler
 import pymongo
 from pymongo.errors import ConnectionFailure
 from tqdm import tqdm
+import datetime
+
 class AutoCrawler():
     def __init__(self, db_url):
         self.crawler = GoogleCrawler()
         self.dbclient = pymongo.MongoClient(db_url)
-        self.dbName = "crawlerdb"
-        self.colName = "keywordcount"
+        self.dbName = "crawler_db"
+        self.colName = "crawler_col"
 
-        self.mydb = self.dbclient["crawlerdb"]
+        self.mydb = self.dbclient[self.dbName]
         self.mycol = self.mydb[self.colName]
 
         self.url_count = '10'
@@ -19,7 +21,7 @@ class AutoCrawler():
         #     print(self.dbName, " OK")
         # collist = self.mydb.list_collection_names()
         # print("collist ",  collist)
-        # if self.colName in collist:   # 判断 sites 集合是否存在
+        # if self.colName in collist:
         #     print(self.colName, " OK")
         # print("=============")
 
@@ -59,6 +61,8 @@ class AutoCrawler():
 
     def sentToDb(self, keywords_count_data):
         collist = self.mydb.list_collection_names()
+        keywords_count_data["Timestamp"] = datetime.datetime.utcnow()
+
         # print(collist)
         if self.colName in collist:
             # keywords_count_data = { "Date": "week1", "Company": "TSMC", "Count": "1" }
