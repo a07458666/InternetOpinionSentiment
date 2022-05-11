@@ -73,9 +73,13 @@ class AutoCrawler():
 if __name__ == "__main__":
     keywords = {
         "TSMC ASML": ['ASML' , 'Intel'],
-        "SUMCO": ['SUMCO', ],
-        "Applied Material": ["Applied Material",]
+        "TSMC SUMCO": ['SUMCO', ],
+        "TSMC Applied Material": ["Applied Material",]
     }
-    db_url = "mongodb://172.17.0.7:27017/"
-    auto_crawler = AutoCrawler(db_url)
-    auto_crawler.run(keywords)
+    import yaml
+
+    with open('./db.yaml', 'r') as f:
+        data = yaml.load(f)
+        db_url = data["db_url"]
+        auto_crawler = AutoCrawler(db_url)
+        auto_crawler.run(keywords)
