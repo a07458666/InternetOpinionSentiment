@@ -9,6 +9,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.tokenize import MWETokenizer
 import paddle
+import pathlib
 # nltk.download()
 
 class GoogleCrawler():
@@ -114,9 +115,14 @@ class GoogleCrawler():
     def word_count_ch(self, text):
         counts = dict()
         import jieba
+        import re
         paddle.enable_static()  # 我的版本需要加這個才能work?
         jieba.enable_paddle()# 启动paddle模式。 0.40版之后开始支持，早期版本不支持
-        jieba.load_userdict('config/custom_dict.txt')
+        # jieba.load_userdict(str(pathlib.Path(__file__).parent.absolute()) + '\config\custom_dict.txt')    # 不使用load_userdict，改用add_word
+        with open(str(pathlib.Path(__file__).parent.absolute()) + '\config\custom_dict.txt', 'r', encoding='utf-8') as fo:
+            for line in fo:
+                jieba.add_word(line.strip())
+        jieba.re_han_default = re.compile('(.+)', re.U) # 讓jieba可識別applied materials
         words = jieba.cut(text, cut_all=False)
         # print(", ".join(words))
         for word in words:
@@ -164,15 +170,16 @@ if __name__ == "__main__":
     results = crawler.google_search(query , 'qdr:w' , '10')
     print(results[:3])
     # Target_URL = 'https://taipeitimes.com/News/biz/archives/2022/01/20/2003771688'
-    Target_URL = 'https://udn.com/news/story/7240/6046136'  # 測試中文新聞
+    # Target_URL = 'https://udn.com/news/story/7240/6046136'  # 測試中文新聞
+    Target_URL = 'https://www.techbang.com/posts/95836-applied-materials-introduces-3d-gaa-transistor-technology' # 測試applied materials和應用材料
+    # Target_URL = 'https://ctee.com.tw/news/global/630756.html'
     response = crawler.get_source(Target_URL)
     soup = crawler.html_parser(response.text)
     orignal_text = crawler.html_getText(soup)
     print(orignal_text[:100])
     result_wordcount = crawler.word_count(orignal_text)
     result_wordcount
-    # whitelist = ['ASML' , 'Intel']
-    whitelist = ['asml' , 'intel', '艾司摩爾', '台積電', 'tsmc']
+    whitelist = ['asml' , 'intel', '艾司摩爾', '台積電', 'tsmc', 'applied materials', '應用材料']
     end_result = crawler.get_wordcount_json(whitelist , result_wordcount)
     print(end_result)
     crawler.jsonarray_toexcel(end_result)
