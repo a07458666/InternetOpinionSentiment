@@ -1,0 +1,7 @@
+{
+    "uri": "127.0.0.1:27017",
+    "usr": "user",
+    "pwd": "password",
+    "database_name": "example_db",
+    "collection_name": "example_collection"
+}
