@@ -4,7 +4,7 @@ const { loadCFG } = require("./utils");
 
 
 function getKeywordModel(conn){
-    const cfg = loadCFG();
+    const cfg = loadCFG('cfg/db_cfg.json');
     const Keyword = new Schema(
     {
         'Company': {'type': String, required:true},
