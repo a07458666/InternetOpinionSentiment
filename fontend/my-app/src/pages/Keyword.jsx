@@ -36,18 +36,18 @@ export default function Keyword(params) {
 
     useEffect(()=>{
         if(queryTime === null) return 
-        console.log("QueryTime updated, goto update Data")
+        // console.log("QueryTime updated, goto update Data")
         let sortedData = TEST_DATA;
         sortedData.sort(function (a, b) {
             return a.time.localeCompare(b.time);
         });
-        console.log(sortedData)
+        // console.log(sortedData)
         setData(sortedData);
     },[queryTime])
 
     useEffect(()=>{
         if(data.length === 0) return
-        console.log("data updated, goto update LineData")
+        // console.log("data updated, goto update LineData")
         const dataToLineData = (data)=>{
             const timeset = new Set(data.map(value => value.time))
             let lineData = []
@@ -73,7 +73,11 @@ export default function Keyword(params) {
                 <div><span>KEYWORD</span></div>
                 <div><span>{`${startTime} - ${endTime}`}</span></div>
 
-                <LineChart width={1000} height={350} data={ lineData }
+                <LineChart 
+                    role="linechart"
+                    data={lineData}
+                    width={1000} 
+                    height={350} 
                     margin={{ top: 10 , right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="time" />
