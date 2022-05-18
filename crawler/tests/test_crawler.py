@@ -1,12 +1,12 @@
 import sys
 import os
+
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
 
 
 import crawler_sample
-
 def test_google_search():
     crawler = crawler_sample.GoogleCrawler()
     query = "TSMC Ingas"
@@ -41,7 +41,3 @@ def test_html_getText():
     soup = crawler.html_parser(response.text)
     orignal_text = crawler.html_getText(soup)
     assert len(orignal_text) > 0
-
-
-
-
