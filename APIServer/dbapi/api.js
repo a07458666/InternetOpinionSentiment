@@ -7,18 +7,23 @@ function getkeyword(startTime, endTime){
     // yyyy-mm-dd
     return new Promise((resolve, reject)=>{
         if(!endTime){
-            endTime = Date.now();
+            endTime = utils.getDateStr();
         }
     
         let ret = utils.makeReturnTemplate();
-        const cfg = utils.loadCFG();
-    
         ret.status = 'normal'
         ret.query_id = 'query id not implement yet';
-    
-        mongouri = `mongodb://${cfg.usr}:${cfg.pwd}@${cfg.uri}/${cfg.database_name}?authMechanism=DEFAULT`
 
-        mongoose.createConnection(mongouri , {serverSelectionTimeoutMS: 5000, socketTimeoutMS: 10000}).asPromise()
+        utils.checkTimeFormat(startTime, asPromise=true, err_prefix='startTime error')
+        .then(() => {
+            return utils.checkTimeFormat(endTime, asPromise=true, err_prefix='endTime error');
+        })
+        .then(() => {
+            const cfg = utils.loadCFG('cfg/db_cfg.json');
+            mongouri = `mongodb://${cfg.usr}:${cfg.pwd}@${cfg.uri}/${cfg.database_name}?authMechanism=DEFAULT`;
+
+            return mongoose.createConnection(mongouri , {serverSelectionTimeoutMS: 5000, socketTimeoutMS: 10000}).asPromise();
+        })
         .then(async (conn) => { // Mongoose is connected
             Keyword = getKeywordModel(conn);
             // go through all data

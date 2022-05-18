@@ -14,7 +14,7 @@ router.get('/getkeyword', function(req, res, next) {
 });
 
 router.get('/getkeyword/:startTime', function(req, res, next) {
-  db.getkeyword(req.params.startTime, null).then(ret => {res.json(ret);});
+  db.getkeyword(req.params.startTime).then(ret => {res.json(ret);});
 });
 
 router.get('/getkeyword/:startTime/:endTime', function(req, res, next) {
