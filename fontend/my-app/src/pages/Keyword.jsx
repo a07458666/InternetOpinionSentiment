@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { LineChart, Line,CartesianGrid, XAxis,YAxis,Tooltip,Legend} from 'recharts';
 //  yyyy-mm-dd
 const TEST_DATA = [
-    { value:"TSMC",count:50,time: "2022-06-30"},
-    { value:"TSMC",count:190,time: "2022-07-01"},
+    
+    { value:"TSMC",count:50,time: "2022-07-01"},
+    { value:"TSMC",count:190,time: "2022-06-30"},
     { value:"TSMC",count:120,time: "2022-07-02"},
     { value:"ASML",count:10,time: "2022-06-30"},
     { value:"ASML",count:60,time: "2022-07-01"},
@@ -22,13 +23,11 @@ function getRandomColor() {
   }
   
 export default function Keyword(params) {
-    const [popData, setpopData] = useState([]);
     const [data, setData] = useState([])
     const [lineData, setLineData] = useState([]) 
     const [startTime, setStartTime] = useState()
     const [endTime, setEndTime] = useState()
-    const [queryTime, setQueryTime] = useState()
-    const popClose = ()=>setpopData([])
+    const [queryTime, setQueryTime] = useState(null)
     useEffect(()=>{
         setStartTime("2022-06-30")
         setEndTime("2022-07-02")
@@ -36,11 +35,19 @@ export default function Keyword(params) {
     },[])
 
     useEffect(()=>{
-        if(queryTime != null)
-            setData(TEST_DATA)
+        if(queryTime === null) return 
+        console.log("QueryTime updated, goto update Data")
+        let sortedData = TEST_DATA;
+        sortedData.sort(function (a, b) {
+            return a.time.localeCompare(b.time);
+        });
+        console.log(sortedData)
+        setData(sortedData);
     },[queryTime])
 
     useEffect(()=>{
+        if(data.length === 0) return
+        console.log("data updated, goto update LineData")
         const dataToLineData = (data)=>{
             const timeset = new Set(data.map(value => value.time))
             let lineData = []
@@ -59,13 +66,7 @@ export default function Keyword(params) {
         }
         setLineData(dataToLineData(data))
     },[data])
-    useEffect(()=>{
-        if(popData.length !== 0){
-            let interval = setInterval(popClose, 1000);
-            return ()=>clearInterval(interval)
-        }
-    },[popData])
-
+    
     return (
         <div>
             <div style={{justifyContent:"center",paddingTop:10,marginBottom:20}}>

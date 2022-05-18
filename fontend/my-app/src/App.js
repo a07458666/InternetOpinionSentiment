@@ -1,5 +1,5 @@
 import './App.css';
-import Keyword from './Keyword'
+import {Keyword} from './pages'
 
 function App() {
   return (
