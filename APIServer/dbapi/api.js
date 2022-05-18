@@ -4,6 +4,7 @@ const utils = require('./utils');
 
 
 function getkeyword(startTime, endTime){
+    // yyyy-mm-dd
     return new Promise((resolve, reject)=>{
         if(!endTime){
             endTime = Date.now();
@@ -21,7 +22,7 @@ function getkeyword(startTime, endTime){
         .then(async (conn) => { // Mongoose is connected
             Keyword = getKeywordModel(conn);
             // go through all data
-            const cursor = Keyword.where('time').gte(startTime).lte(endTime).cursor();
+            const cursor = Keyword.where('Timestamp').gte(startTime).lte(endTime).cursor();
             for (let data = await cursor.next(); data != null; data = await cursor.next()) {
                 ret.data.push(data);
             }

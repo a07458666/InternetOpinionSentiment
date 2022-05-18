@@ -7,9 +7,9 @@ function getKeywordModel(conn){
     const cfg = loadCFG();
     const Keyword = new Schema(
     {
-        'keyword': {'type': String, required:true},
-        'count': {'type': Number, default: 0},
-        'time': {'type': Date, required:true},
+        'Company': {'type': String, required:true},
+        'Count': {'type': Number, default: 0},
+        'Timestamp': {'type': Date, required:true},
     }, 
     {collection: cfg.collection_name});
 

@@ -8,8 +8,8 @@ function loadCFG(){
 
 function makeReturnTemplate(){
     return {
-        'status': null,
-        'error_msg': null,
+        'status': null, // normal | error
+        'error_msg': null, // null | str
         'data' : [],
         'query_id': null
     }
