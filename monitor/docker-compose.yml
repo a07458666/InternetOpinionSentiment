@@ -1,0 +1,29 @@
+version: '3.2'
+services:
+  lab18-prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      # Map port 9090 inside the container to port 19090 on the host
+      - 19090:9090
+
+  lab18-grafana:
+    image: grafana/grafana:8.3.6
+    volumes:
+      - ./datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ./dashboard-provider.yml:/etc/grafana/provisioning/dashboards/dashboard-provider.yml
+      - ./dashboard-node-exporter.json:/var/lib/grafana/dashboards/demo/dashboard-node-exporter.json
+    depends_on:
+      - lab18-prometheus
+    ports:
+      - 13000:3000
+    
+  lab18-mongodb:
+    image: mongo
+    volumes: 
+      - ./mongodb:/data/db
+    ports:
+      - 27017:27017

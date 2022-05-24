@@ -1,0 +1,7 @@
+apiVersion: 1
+datasources:
+  - access: proxy
+    editable: true
+    name: Prometheus
+    type: prometheus
+    url: http://lab18-prometheus:9090
