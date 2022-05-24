@@ -5,14 +5,20 @@ from tqdm import tqdm
 import datetime
 
 class AutoCrawler():
-    def __init__(self, db_url = ""):
+    def __init__(self, db_cfg, useDB = True):
         self.url_count = '10'
-        self.db_url = db_url
         self.crawler = GoogleCrawler()
-        if (self.db_url != ""):
-            self.dbclient = pymongo.MongoClient(self.db_url)
-            self.dbName = "crawler_db"
-            self.colName = "crawler_col"
+        self.useDB = useDB
+        if self.useDB:
+            usr = db_cfg.get("usr", "")
+            pwd = db_cfg.get("pwd", "")
+            ip = db_cfg.get("ip", "")
+            port = db_cfg.get("port", "")
+            self.dbName = db_cfg.get("database_name", "")
+            db_url = "mongodb://{}:{}@{}:{}/{}".format(usr, pwd, ip, port, self.dbName)
+            print("db_url :", db_url)
+            self.dbclient = pymongo.MongoClient(db_url)
+            self.colName = db_cfg.get("collection_name", "")
 
             self.mydb = self.dbclient[self.dbName]
             self.mycol = self.mydb[self.colName]
@@ -50,7 +56,7 @@ class AutoCrawler():
         return 0
 
     def sentToDb(self, keywords_count_data):
-        if (self.db_url == ""):
+        if (not self.useDB):
             return 0
         collist = self.mydb.list_collection_names()
         keywords_count_data["Timestamp"] = datetime.datetime.utcnow()
@@ -68,8 +74,7 @@ if __name__ == "__main__":
     }
     import yaml
 
-    with open('./db.yaml', 'r') as f:
-        data = yaml.load(f)
-        db_url = data["db_url"]
-        auto_crawler = AutoCrawler(db_url)
+    with open('./cfg_db.yaml', 'r') as f:
+        db_cfg = yaml.load(f)
+        auto_crawler = AutoCrawler(db_cfg)
         auto_crawler.run(keywords)
