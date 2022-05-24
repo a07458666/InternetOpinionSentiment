@@ -1,3 +1,4 @@
+import os
 import requests
 import urllib
 import pandas as pd
@@ -119,7 +120,8 @@ class GoogleCrawler():
         paddle.enable_static()  # 我的版本需要加這個才能work?
         jieba.enable_paddle()# 启动paddle模式。 0.40版之后开始支持，早期版本不支持
         # jieba.load_userdict(str(pathlib.Path(__file__).parent.absolute()) + '\config\custom_dict.txt')    # 不使用load_userdict，改用add_word
-        with open(str(pathlib.Path(__file__).parent.absolute()) + '\config\custom_dict.txt', 'r', encoding='utf-8') as fo:
+        path = os.path.join("./config", "custom_dict.txt")
+        with open(path, 'r', encoding='utf-8') as fo:
             for line in fo:
                 jieba.add_word(line.strip())
         jieba.re_han_default = re.compile('(.+)', re.U) # 讓jieba可識別applied materials
