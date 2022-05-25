@@ -13,9 +13,9 @@ scrape_configs:
       # 預設會定期 scrape 這個 url - http://my-prometheus:9090/metrics
       - targets: [lab18-prometheus:9090]
 
-  # - job_name: mongodb
-  #   scrape_interval: 30s
-  #   scrape_timeout: 30s
-  #   honor_labels: true
-  #   static_configs:
-  #     - targets: ['lab18-mongo_exporter:19001']
+  - job_name: mongodb
+    scrape_interval: 5s
+    scrape_timeout: 5s
+    honor_labels: true
+    static_configs:
+      - targets: ['lab18-mongodb-exporter:9216']
