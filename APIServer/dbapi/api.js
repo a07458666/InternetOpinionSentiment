@@ -12,6 +12,7 @@ function getkeyword(startTime, endTime){
             ret.status = 'error';
             ret.error_msg = 'startTime must be given';
             resolve(ret);
+            return;
         }
 
         if(!endTime){
