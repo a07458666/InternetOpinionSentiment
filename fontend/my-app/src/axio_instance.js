@@ -1,23 +1,22 @@
 import axios from "axios";
 import Config from "./config.json";
-const {API_URL,API_KEY} = Config
+const {API_URL} = Config
 const instance = axios.create({
   baseURL: API_URL,
   headers: { 
       'Content-Type': 'application/json',
-      'api-key' : API_KEY
+      // 'api-key' : API_KEY
   },
 });
 instance.interceptors.response.use(
     function (response) {
-        const {status,error_msg,data,query_id} = response;
+        const {status,error_msg,data} = response.data; // query_id current not use
+        // eslint-disable-next-line 
         switch (status) {
             case "error":
                 return Promise.reject(new Error((error_msg != null) ? error_msg : "No ERROR MSG SHOW"))
             case "normal":
-                return data;
-            default:
-                return response;
+                return Promise.resolve(data);       
         }
     },
     function (error) {
@@ -35,10 +34,6 @@ instance.interceptors.response.use(
             console.log(error.message)
         }
       } 
-      if (!window.navigator.onLine) {
-        alert("網路出了點問題，請重新連線後重整網頁");
-        return;
-      }
       return Promise.reject(error);
     }
 );
