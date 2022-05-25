@@ -7,18 +7,18 @@ var db = require('../dbapi/api');
 /* GET home page. */
 router.use(bodyParser.json());
 
-router.get('/getkeyword', function(req, res, next) {
-  res.json({
-    'error': 'Time interval was not given'
+router.get('/getkeyword', function(req, res) {
+  startTime = req.query.startTime;
+  endTime = req.query.endTime;
+
+  db.getkeyword(startTime, endTime).then(ret => {
+    if(ret.status=='error'){
+      res.status(500).json(ret);
+    }
+    else{
+      res.json(ret);
+    }
   });
-});
-
-router.get('/getkeyword/:startTime', function(req, res, next) {
-  db.getkeyword(req.params.startTime).then(ret => {res.json(ret);});
-});
-
-router.get('/getkeyword/:startTime/:endTime', function(req, res, next) {
-  db.getkeyword(req.params.startTime, req.params.endTime).then(ret => {res.json(ret);});
 });
 
 module.exports = router;

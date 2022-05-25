@@ -16,6 +16,7 @@
     "mocha": "^10.0.0",
     "mongoose": "^6.3.3",
     "morgan": "~1.9.1",
+    "prom-client": "^14.0.1",
     "should": "^13.2.3"
   }
 }

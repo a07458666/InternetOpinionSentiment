@@ -6,12 +6,19 @@ const utils = require('./utils');
 function getkeyword(startTime, endTime){
     // yyyy-mm-dd
     return new Promise((resolve, reject)=>{
+        let ret = utils.makeReturnTemplate();
+
+        if(!startTime){
+            ret.status = 'error';
+            ret.error_msg = 'startTime must be given';
+            resolve(ret);
+        }
+
         if(!endTime){
             endTime = utils.getDateStr();
         }
-    
-        let ret = utils.makeReturnTemplate();
-        ret.status = 'normal'
+
+        ret.status = 'normal';
         ret.query_id = 'query id not implement yet';
 
         utils.checkTimeFormat(startTime, asPromise=true, err_prefix='startTime error')
