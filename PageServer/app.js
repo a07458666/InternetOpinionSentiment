@@ -4,6 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+const prom_client = require('prom-client');
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
@@ -19,6 +21,55 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Prometheus setup
+const register = prom_client.register;
+
+prom_client.collectDefaultMetrics({register});
+
+const INFO = new prom_client.Gauge({
+  name: 'app_info',
+  help: 'app info',
+  labelNames: ['app_name', 'author', 'author_mail', 'description', 'version']
+});
+register.registerMetric(INFO);
+
+INFO.labels({
+  app_name: 'Page Server',
+  author: 'suyihao',
+  author_mail: 'suyihao1999@gmail.com',
+  description: 'server for response web pages',
+  version: '0.0.1'
+}).set(1);
+
+const requestCounter = new prom_client.Counter({
+  name: 'http_request',
+  help: 'http request counter',
+  labelNames: ['method', 'path', 'statusCode'],
+});
+register.registerMetric(requestCounter);
+
+app.use(function(req, res,next){
+  res.on('finish', function(){
+    requestCounter.labels({
+      method: req.method,
+      path: req.originalUrl,
+      statusCode: res.statusCode
+    }).inc();
+  });
+  next();
+});
+
+// Setup server to Prometheus scrapes:
+app.get('/metrics', async (req, res) => {
+	try {
+		res.set('Content-Type', register.contentType);
+		res.end(await register.metrics());
+	} catch (ex) {
+		res.status(500).end(ex);
+	}
+});
+
+// route
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
