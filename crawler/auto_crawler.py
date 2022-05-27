@@ -1,3 +1,4 @@
+from ast import keyword
 from crawler_sample import GoogleCrawler
 import pymongo
 from pymongo.errors import ConnectionFailure
@@ -5,9 +6,16 @@ from tqdm import tqdm
 import datetime
 import os
 import pathlib
+import yaml
+
+
+CFG_DB_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), "config", "cfg_db.yaml")
+CFG_CRAWLER_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), "config", "cfg_crawler.yaml")
 
 class AutoCrawler():
-    def __init__(self, db_cfg, useDB = True):
+    def __init__(self, useDB = True):
+        with open(CFG_DB_PATH, 'r') as db_f:
+            db_cfg = yaml.load(db_f)
         self.url_count = '10'
         self.crawler = GoogleCrawler()
         self.useDB = useDB
@@ -44,8 +52,9 @@ class AutoCrawler():
         # print(end_result)
         return end_result
 
-    def run(self, keywords):
-        for query, whitelist in keywords.items():
+    def run(self, keywords, whitelist):
+       
+        for query in keywords:
             results = self.getURL(query)
             for result in tqdm(results):
                 url = result["link"]
@@ -55,6 +64,7 @@ class AutoCrawler():
                 for end_result in end_results:
                     self.sentToDb(end_result)
             print(query, ' is OK')
+        
         return 0
 
     def sentToDb(self, keywords_count_data):
@@ -69,16 +79,14 @@ class AutoCrawler():
         return 0
 
 if __name__ == "__main__":
-    import yaml
-    cfg_db_path = os.path.join("config", "cfg_db.yaml")
-    cfg_db_path = os.path.join(pathlib.Path(__file__).parent.absolute(), cfg_db_path)
+    cfg_db_path = os.path.join(pathlib.Path(__file__).parent.absolute(), "config", "cfg_db.yaml")
 
-    cfg_keywords_path = os.path.join("config", "cfg_keyword.yaml")
-    cfg_keywords_path = os.path.join(pathlib.Path(__file__).parent.absolute(), cfg_keywords_path)
+    cfg_keywords_path = os.path.join(pathlib.Path(__file__).parent.absolute(), "config", "cfg_keyword.yaml")
+    cfg_path = os.path.join(pathlib.Path(__file__).parent.absolute(), "config", "cfg_crawler.yaml")
 
-    with open(cfg_db_path, 'r') as db_f:
-        with open(cfg_keywords_path, 'r') as keywords_f:
-            db_cfg = yaml.load(db_f)
-            keywords = yaml.load(keywords_f)
-            auto_crawler = AutoCrawler(db_cfg)
-            auto_crawler.run(keywords)
+    with open(cfg_path, 'r', encoding='utf-8') as cfg_f:
+        cfg = yaml.load(cfg_f, Loader=yaml.FullLoader)
+    keywords = cfg.get('keywords', ['TSMC'])
+    whitelist = cfg.get('whitelist', ['TSMC'])
+    auto_crawler = AutoCrawler()
+    auto_crawler.run(keywords, whitelist)

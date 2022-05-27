@@ -11,12 +11,18 @@ from nltk.tokenize import word_tokenize
 from nltk.tokenize import MWETokenizer
 import paddle
 import pathlib
+import yaml
 # nltk.download()
+
+
+CONFIG_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), 'config', 'cfg_crawler.yaml')
 
 class GoogleCrawler():
     
     def __init__(self):
         self.url = 'https://www.google.com/search?q='    
+        with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
+            self.cfg = yaml.load(f, Loader=yaml.FullLoader)
     #  URL 萃取 From Google Search上 , using 第三方套件
     #  https://python-googlesearch.readthedocs.io/en/latest/
     def google_url_search_byOpenSource(query,tbs='qdr:m',num=10):
@@ -91,7 +97,7 @@ class GoogleCrawler():
         return orignal_text
     
     def word_count(self, text):
-        text = text.lower()
+        # text = text.lower()
         if self.is_contains_chinese(text):
             counts = self.word_count_ch(text)
         else:
@@ -102,7 +108,10 @@ class GoogleCrawler():
         counts = dict()
         stop_words = set(stopwords.words('english'))
         words = word_tokenize(text)
-        tokenizer = MWETokenizer([('applied', 'materials'), ('applied', 'material')], separator=' ')
+        custom_dict = []
+        for word in self.cfg.get('nltk_custom_dict'):
+            custom_dict.append(tuple(word.split()))
+        tokenizer = MWETokenizer(custom_dict, separator=' ')
         words = tokenizer.tokenize(words)
         #words = text.replace(',','').split()
         for word in words:
@@ -117,15 +126,10 @@ class GoogleCrawler():
         counts = dict()
         import jieba
         import re
-        # paddle.enable_static()  # 我的版本需要加這個才能work?
+        paddle.enable_static()  # 我的版本需要加這個才能work?
         jieba.enable_paddle()# 启动paddle模式。 0.40版之后开始支持，早期版本不支持
-        # jieba.load_userdict(str(pathlib.Path(__file__).parent.absolute()) + '\config\custom_dict.txt')    # 不使用load_userdict，改用add_word
-        # path = os.path.join("./config", "custom_dict.txt")
-        path = os.path.join("config", "custom_dict.txt")
-        path = os.path.join(pathlib.Path(__file__).parent.absolute(), path)
-        with open(path, 'r', encoding='utf-8') as fo:
-            for line in fo:
-                jieba.add_word(line.strip())
+        for word in self.cfg.get('jieba_custom_dict'):
+            jieba.add_word(word.strip())
         jieba.re_han_default = re.compile('(.+)', re.U) # 讓jieba可識別applied materials
         words = jieba.cut(text, cut_all=False)
         # print(", ".join(words))
