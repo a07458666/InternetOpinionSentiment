@@ -7,8 +7,6 @@ describe('Keyword Page', () => {
   beforeEach(() =>{ // if use beforeall it will auto cleanup in aftereach
     render(<Keyword />)
   });
-
-  
   test('Title', () => {
     expect(screen.getByText(/Keyword/i)).toBeInTheDocument();
   });
@@ -25,6 +23,7 @@ describe('Keyword Page', () => {
     expect(screen.getByRole('linechart')).toBeTruthy();
   })
 
+  
   test('Line Charts Hover Event',()=>{
     const target = screen.getByRole('linechart')
     userEvent.hover(target);

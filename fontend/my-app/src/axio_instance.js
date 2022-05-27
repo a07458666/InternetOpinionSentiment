@@ -11,13 +11,9 @@ const instance = axios.create({
 instance.interceptors.response.use(
     function (response) {
         const {status,error_msg,data} = response.data; // query_id current not use
-        // eslint-disable-next-line 
-        switch (status) {
-            case "error":
-                return Promise.reject(new Error((error_msg != null) ? error_msg : "No ERROR MSG SHOW"))
-            case "normal":
-                return Promise.resolve(data);       
-        }
+        return (status === "error")
+          ? Promise.reject(new Error((error_msg != null) ? error_msg : "No ERROR MSG SHOW"))
+          : Promise.resolve(data) 
     },
     function (error) {
       if (error.response){

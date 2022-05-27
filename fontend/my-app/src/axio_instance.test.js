@@ -13,7 +13,6 @@ describe('axio', () => {
     const logSpy = jest.spyOn(console, 'log');
     return axio_instance.get('status500/')
                         .catch(error=>expect(logSpy).toHaveBeenCalledWith('程式發生問題'))
-    
   });
   test('505', () => {
     mock = new MockAdapter(axio_instance)
@@ -30,6 +29,7 @@ describe('axio', () => {
     return axio_instance.get('wrong-suburl/')
            .catch(error=>expect(logSpy).toHaveBeenCalledWith('你要找的頁面不存在'))
   });
+  
   test('200 and status normal', () => {
     return axio_instance.get('getkeyword/2022-04-01/').then(data=>{
       expect(data).toBeDefined();
