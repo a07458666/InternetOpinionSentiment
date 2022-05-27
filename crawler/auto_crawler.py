@@ -3,6 +3,8 @@ import pymongo
 from pymongo.errors import ConnectionFailure
 from tqdm import tqdm
 import datetime
+import os
+import pathlib
 
 class AutoCrawler():
     def __init__(self, db_cfg, useDB = True):
@@ -52,7 +54,7 @@ class AutoCrawler():
                 print("end_result : ", end_results)
                 for end_result in end_results:
                     self.sentToDb(end_result)
-            print(query, 'Excel is OK')
+            print(query, ' is OK')
         return 0
 
     def sentToDb(self, keywords_count_data):
@@ -67,14 +69,16 @@ class AutoCrawler():
         return 0
 
 if __name__ == "__main__":
-    keywords = {
-        "TSMC ASML": ['ASML' , 'Intel'],
-        "TSMC SUMCO": ['SUMCO', ],
-        "TSMC Applied Material": ["Applied Material",]
-    }
     import yaml
+    cfg_db_path = os.path.join("config", "cfg_db.yaml")
+    cfg_db_path = os.path.join(pathlib.Path(__file__).parent.absolute(), cfg_db_path)
 
-    with open('./cfg_db.yaml', 'r') as f:
-        db_cfg = yaml.load(f)
-        auto_crawler = AutoCrawler(db_cfg)
-        auto_crawler.run(keywords)
+    cfg_keywords_path = os.path.join("config", "cfg_keyword.yaml")
+    cfg_keywords_path = os.path.join(pathlib.Path(__file__).parent.absolute(), cfg_keywords_path)
+
+    with open(cfg_db_path, 'r') as db_f:
+        with open(cfg_keywords_path, 'r') as keywords_f:
+            db_cfg = yaml.load(db_f)
+            keywords = yaml.load(keywords_f)
+            auto_crawler = AutoCrawler(db_cfg)
+            auto_crawler.run(keywords)

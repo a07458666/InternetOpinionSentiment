@@ -117,7 +117,7 @@ class GoogleCrawler():
         counts = dict()
         import jieba
         import re
-        paddle.enable_static()  # 我的版本需要加這個才能work?
+        # paddle.enable_static()  # 我的版本需要加這個才能work?
         jieba.enable_paddle()# 启动paddle模式。 0.40版之后开始支持，早期版本不支持
         # jieba.load_userdict(str(pathlib.Path(__file__).parent.absolute()) + '\config\custom_dict.txt')    # 不使用load_userdict，改用add_word
         # path = os.path.join("./config", "custom_dict.txt")
