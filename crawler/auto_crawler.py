@@ -79,12 +79,7 @@ class AutoCrawler():
         return 0
 
 if __name__ == "__main__":
-    cfg_db_path = os.path.join(pathlib.Path(__file__).parent.absolute(), "config", "cfg_db.yaml")
-
-    cfg_keywords_path = os.path.join(pathlib.Path(__file__).parent.absolute(), "config", "cfg_keyword.yaml")
-    cfg_path = os.path.join(pathlib.Path(__file__).parent.absolute(), "config", "cfg_crawler.yaml")
-
-    with open(cfg_path, 'r', encoding='utf-8') as cfg_f:
+    with open(CFG_CRAWLER_PATH, 'r', encoding='utf-8') as cfg_f:
         cfg = yaml.load(cfg_f, Loader=yaml.FullLoader)
     keywords = cfg.get('keywords', ['TSMC'])
     whitelist = cfg.get('whitelist', ['TSMC'])
