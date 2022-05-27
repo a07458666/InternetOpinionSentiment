@@ -50,7 +50,7 @@ def test_word_count_en():
     soup = crawler.html_parser(response.text)
     orignal_text = crawler.html_getText(soup)
     result_wordcount = crawler.word_count(orignal_text)
-    whitelist = ['tsmc']
+    whitelist = ['TSMC']
     end_result = crawler.get_wordcount_json(whitelist , result_wordcount)
     assert end_result[0]['Count'] > 0
 
@@ -62,7 +62,7 @@ def test_word_count_en_with_applied_materials():
     soup = crawler.html_parser(response.text)
     orignal_text = crawler.html_getText(soup)
     result_wordcount = crawler.word_count(orignal_text)
-    whitelist = ['applied materials']
+    whitelist = ['Applied Materials']
     end_result = crawler.get_wordcount_json(whitelist , result_wordcount)
     assert end_result[0]['Count'] > 0
 
@@ -86,6 +86,6 @@ def test_word_count_ch_with_applied_materials():
     soup = crawler.html_parser(response.text)
     orignal_text = crawler.html_getText(soup)
     result_wordcount = crawler.word_count(orignal_text)
-    whitelist = ['applied materials']
+    whitelist = ['Applied Materials']
     end_result = crawler.get_wordcount_json(whitelist , result_wordcount)
     assert end_result[0]['Count'] > 0
