@@ -1,15 +1,7 @@
-# uri: ""
-# usr: "lab18"
-# pwd: "ec131b"
-# database_name: "crawler_db"
-# collection_name: "crawler_col"
-# ip : "140.113.24.138"
-# port: 27017
-
 uri: ""
-usr: "lab18"
-pwd: "ec131b"
-database_name: "keyword_tab"
-collection_name: "keyword_col"
-ip : "140.113.215.98"
-port: 27017
+usr: ""
+pwd: ""
+database_name: ""
+collection_name: ""
+ip : ""
+port: 
