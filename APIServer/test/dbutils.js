@@ -57,9 +57,11 @@ describe('util: getDateStr', ()=>{
     it('should complie date string to yyyy-mm-dd format', done=>{
         var date1 = utils.getDateStr('2022,May,10')
         var date2 = utils.getDateStr('3/12/2000')
+        var date3 = utils.getDateStr('7/4/2012')
 
         date1.should.equal('2022-05-10')
         date2.should.equal('2000-03-12')
+        date3.should.equal('2012-07-04')
 
         done()
     })
