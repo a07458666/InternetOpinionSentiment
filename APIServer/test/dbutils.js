@@ -57,11 +57,11 @@ describe('util: getDateStr', ()=>{
     it('should complie date string to yyyy-mm-dd format', done=>{
         var date1 = utils.getDateStr('2022,May,10')
         var date2 = utils.getDateStr('3/12/2000')
-        var date3 = utils.getDateStr('7/4/2012')
+        var date3 = utils.getDateStr('10/4/2012')
 
         date1.should.equal('2022-05-10')
         date2.should.equal('2000-03-12')
-        date3.should.equal('2012-07-04')
+        date3.should.equal('2012-10-04')
 
         done()
     })
@@ -88,5 +88,31 @@ describe('util: checkTimeFormat', ()=>{
 
         utils.checkTimeFormat('2022-05-12').should.equal(true)
         done()
+    })
+
+    it('should resolve when asPromise is true and date format correct', done=>{
+        utils.checkTimeFormat('2022-05-12', asPromise=true)
+        .then(()=>{ return })
+        .catch(()=>{
+            const resolve = false
+            resolve.should.equal(true)
+        }).then(done)
+    })
+
+    it('should reject when asPromise is true and date format wrong', done=>{
+        utils.checkTimeFormat('2022/05/12', asPromise=true).then(()=>{
+            const reject = false
+            reject.should.equal(true)
+        }).catch(reason=>{
+            done()
+        })
+    })
+
+    it('if user specify prefix, when promise reject, reject reason prefix should be modify', done=>{
+        utils.checkTimeFormat('2022/05/12', asPromise=true, err_prefix='test')
+        .catch(reason=>{
+            reason.should.equal('test: format is not yyyy-mm-dd')
+            done()
+        })
     })
 })
