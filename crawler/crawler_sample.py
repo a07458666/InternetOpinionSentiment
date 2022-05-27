@@ -19,9 +19,7 @@ class GoogleCrawler():
         self.url = 'https://www.google.com/search?q='    
     #  URL 萃取 From Google Search上 , using 第三方套件
     #  https://python-googlesearch.readthedocs.io/en/latest/
-    def google_url_search_byOpenSource(query,tbs='qdr:m',num=10):
-        array_url = [url for url in search('tsmc', tbs='qdr:m' , num=10)]
-        return array_url
+
     # 網路擷取器
     def get_source(self,url):
         try:
@@ -156,35 +154,9 @@ class GoogleCrawler():
                 }
                 data_array.append(json_data)
         return data_array
-
-    def jsonarray_toexcel(self,data_array):
-        df = pd.DataFrame(data=data_array)
-        df.to_excel('result.xlsx' , index=False)
-        return
     
     def is_contains_chinese(self, strs):
         for _char in strs:
             if '\u4e00' <= _char <= '\u9fa5':
                 return True
         return False
-    
-# if __name__ == "__main__":
-#     query = "TSMC ASML"
-#     crawler = GoogleCrawler()
-#     results = crawler.google_search(query , 'qdr:w' , '10')
-#     print(results[:3])
-#     # Target_URL = 'https://taipeitimes.com/News/biz/archives/2022/01/20/2003771688'
-#     # Target_URL = 'https://udn.com/news/story/7240/6046136'  # 測試中文新聞
-#     Target_URL = 'https://www.techbang.com/posts/95836-applied-materials-introduces-3d-gaa-transistor-technology' # 測試applied materials和應用材料
-#     # Target_URL = 'https://ctee.com.tw/news/global/630756.html'
-#     response = crawler.get_source(Target_URL)
-#     soup = crawler.html_parser(response.text)
-#     orignal_text = crawler.html_getText(soup)
-#     print(orignal_text[:100])
-#     result_wordcount = crawler.word_count(orignal_text)
-#     result_wordcount
-#     whitelist = ['asml' , 'intel', '艾司摩爾', '台積電', 'tsmc', 'applied materials', '應用材料']
-#     end_result = crawler.get_wordcount_json(whitelist , result_wordcount)
-#     print(end_result)
-#     crawler.jsonarray_toexcel(end_result)
-#     print('Excel is OK')

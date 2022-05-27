@@ -7,11 +7,10 @@ sys.path.append(parent)
 
 
 import auto_crawler
-def test_getURL():
-    crawler = auto_crawler.AutoCrawler()
-    query = "TSMC Ingas"
-    results = crawler.getURL(query)
-    assert len(results) > 0
+
+def test_no_db():
+    crawler = auto_crawler.AutoCrawler(False)
+    assert crawler.useDB == False
 
 def test_getTextbyURL():
     crawler = auto_crawler.AutoCrawler()
@@ -31,7 +30,8 @@ def test_countKeyWord():
 def test_run():
     keywords = {"TSMC ASML": ['ASML' , 'Intel']}
     crawler = auto_crawler.AutoCrawler()
-    ret = crawler.run(keywords)
+    ret = crawler.setKeyword(keywords)
+    ret = crawler.run()
     assert ret == 0
 
 
