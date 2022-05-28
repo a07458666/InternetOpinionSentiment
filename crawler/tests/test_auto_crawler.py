@@ -28,12 +28,12 @@ def test_countKeyWord():
     assert len(results) > 0
 
 def test_run():
-    keywords = {"TSMC ASML": ['ASML' , 'Intel']}
+    keywords = ['TSMC']
+    whitelist = ['TSMC']
     crawler = auto_crawler.AutoCrawler()
     ret = crawler.setKeyword(keywords)
     ret = crawler.run()
     assert ret == 0
-
 
 def test_sentToDb():
     crawler = auto_crawler.AutoCrawler()

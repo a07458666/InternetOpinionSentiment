@@ -1,3 +1,4 @@
+from ast import keyword
 from crawler_sample import GoogleCrawler
 import pymongo
 from pymongo.errors import ConnectionFailure
@@ -7,10 +8,13 @@ import os
 import pathlib
 import yaml
 
-class AutoCrawler(GoogleCrawler):
+CFG_DB_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), "config", "cfg_db.yaml")
+CFG_CRAWLER_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), "config", "cfg_crawler.yaml")
+
+class AutoCrawler():
     def __init__(self, useDB = True):
         super().__init__()
-        self.db_cfg, self.keywords = self.loadCfg()
+        self.db_cfg, self.keywords, self.whitelist = self.loadCfg()
         self.url_count = '10'
         self.useDB = useDB
         if self.useDB:
@@ -26,34 +30,32 @@ class AutoCrawler(GoogleCrawler):
 
     def countKeyWord(self, whitelist, orignal_text)->dict:
         result_wordcount = self.word_count(orignal_text)
-        end_result = self.get_wordcount_json(whitelist , result_wordcount)
+        end_result = self.get_wordcount_json(self.whitelist , result_wordcount)
         # print(end_result)
         return end_result
 
     def run(self):
-        for query, whitelist in self.keywords.items():
+        for query in self.keywords.items():
             results = self.google_search(query , 'qdr:w' , self.url_count)
             for result in tqdm(results):
                 url = result["link"]
                 orignal_text = self.getTextbyURL(url)
-                end_results = self.countKeyWord(whitelist, orignal_text)
+                end_results = self.countKeyWord(orignal_text)
                 print("end_result : ", end_results)
                 for end_result in end_results:
                     self.sentToDb(end_result)
-            print(query, ' is OK')
+            print(query, ' is OK')   
         return 0
     
     def loadCfg(self):
-        cfg_db_path = os.path.join("config", "cfg_db.yaml")
-        cfg_db_path = os.path.join(pathlib.Path(__file__).parent.absolute(), cfg_db_path)
-        with open(cfg_db_path, 'r') as db_f:
+        with open(CFG_DB_PATH, 'r') as db_f:
             db_cfg = yaml.load(db_f)
             
-        cfg_keywords_path = os.path.join("config", "cfg_keyword.yaml")
-        cfg_keywords_path = os.path.join(pathlib.Path(__file__).parent.absolute(), cfg_keywords_path)
-        with open(cfg_keywords_path, 'r') as keywords_f:
-            keywords = yaml.load(keywords_f)
-        return db_cfg, keywords
+        with open(CFG_CRAWLER_PATH, 'r', encoding='utf-8') as cfg_f:
+            cfg = yaml.load(cfg_f, Loader=yaml.FullLoader)
+        keywords = cfg.get('keywords', ['TSMC'])
+        whitelist = cfg.get('whitelist', ['TSMC'])
+        return db_cfg, keywords, whitelist
 
     def setDB(self):
         usr = self.db_cfg.get("usr", "")
