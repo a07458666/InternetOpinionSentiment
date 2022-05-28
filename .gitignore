@@ -6,6 +6,7 @@ db.yaml
 __pycache__/
 *.py[cod]
 cfg_db.yaml
+test-results.xml
 # C extensions
 *.so
 
