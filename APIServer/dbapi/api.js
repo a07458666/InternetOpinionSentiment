@@ -34,12 +34,25 @@ function getkeyword(startTime, endTime){
         })
         .then(async (conn) => { // Mongoose is connected
             Keyword = getKeywordModel(conn);
-            // go through all data
-            const cursor = Keyword.where('Timestamp').gte(startTime).lte(endTime).cursor();
-            for (let data = await cursor.next(); data != null; data = await cursor.next()) {
-                ret.data.push(data);
-            }
-    
+            
+            ret.data = await Keyword.aggregate([
+                {$project: {
+                    Company: 1, 
+                    Count: 1, 
+                    date: {
+                        $substr: ["$Timestamp", 0, 10]
+                    }
+                }},
+                {$match: {date: {$gte: startTime, $lte: endTime}}},
+                {$group: {"_id" : {Company: "$Company", Timestamp: "$date"}, "Count" : {"$sum" : "$Count"}}},
+                {$project: {
+                    _id: 0,                     // not show
+                    Company: "$_id.Company",    // keyword
+                    Count: 1,                   // sum(count)
+                    Timestamp: "$_id.Timestamp" // yyyy-mm-dd format
+                }}
+            ])
+
             conn.close();
         })
         .catch(err =>{
