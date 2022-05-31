@@ -2,6 +2,7 @@ import {KeywordData} from '../model'
 import moment from 'moment'
 
 export default class DataAdapter{
+    
     // Adapte to KeyWordDataList for Keyword Page
     static rawDataToKeyWordData(rawDataList){
         let keyWordDataDict = {}  // {   `${Company}-${yyyymmdd}`:  {  Company: str, Timestamp: str/YYYY-MM-DD/, Count:int }   }

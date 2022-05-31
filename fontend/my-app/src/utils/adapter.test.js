@@ -1,8 +1,9 @@
 import DataAdapter  from './adapter'
 describe('DataAdapter', () => {
     
-    test('rawDataToKeyWordData', () => {
+  test('rawDataToKeyWordData', () => {
       const TEST_DATA = [
+          { Company:"TSMC",Count:2,Timestamp: "2022-07-01"},
           { Company:"TSMC",Count:2,Timestamp: "2022-07-01"},
           { Company:"TSMC",Count:190,Timestamp: "2022-06-30"},
           { Company:"TSMC",Count:120,Timestamp: "2022-07-02"},

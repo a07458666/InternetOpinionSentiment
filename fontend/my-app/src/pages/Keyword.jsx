@@ -3,6 +3,7 @@ import { LineChart, Line,CartesianGrid, XAxis,YAxis,Tooltip,Legend} from 'rechar
 import axio_instance from '../axio_instance';
 
 import { getRandomColor,DataAdapter} from '../utils'
+import moment from 'moment'
 
 export default function Keyword(params) {
     const [keywordData, setKeyWordData] = useState([])
@@ -11,26 +12,30 @@ export default function Keyword(params) {
     const [endTime, setEndTime] = useState(null)
     useEffect(()=>{
         setStartTime("2022-04-30")
-        setEndTime("2022-07-02")
+        setEndTime(moment(new Date()).format('YYYY-MM-DD'))
     },[])
 
     useEffect(()=>{
         if(startTime === null) return 
-        axio_instance.get(`getkeyword/${startTime}/`).then(rawData=>{
-            // console.log(rawData)
+        const dataRequest = { 
+            params: {
+                startTime: startTime, 
+                endTime: endTime
+            }
+        }
+        axio_instance.get(`getkeyword`,dataRequest).then(rawData=>{
+            
             let sortedData = DataAdapter.rawDataToKeyWordData(rawData);
             sortedData.sort((a, b) => a.date.localeCompare(b.date));
             
-            // console.log(sortedData)
             setKeyWordData(sortedData);
         })
       
-    },[startTime])
+    },[startTime,endTime])
 
     useEffect(()=>{
         if(keywordData.length === 0) return       
         const data =  DataAdapter.keywordDataToLineData(keywordData)
-        // console.log(data)
         setLineData(data);
     },[keywordData])
     
