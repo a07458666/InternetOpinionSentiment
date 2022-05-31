@@ -51,6 +51,18 @@ services:
         - 'mongodb-service'
     command: --mongodb.uri mongodb://lab18:ec131b@lab18-mongodb:27017 --mongodb.collstats-colls=keyword_tab.keyword_col --compatible-mode=1
 
+  my-crawler:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    depends_on:
+      - lab18-prometheus
+    networks:
+        - mongonet
+    ports:
+      - 8111:8111
+      - 8777:8777
+
 networks:
   mongonet:
     driver: bridge

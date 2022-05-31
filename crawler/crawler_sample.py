@@ -33,6 +33,7 @@ class GoogleCrawler():
             response = session.get(url)
             return response
         except requests.exceptions.RequestException as e:
+            r = requests.get('http://localhost:8111/search_fail')
             print(e)
     # URL 萃取 From Google Search上
     def scrape_google(self,query):
@@ -71,7 +72,11 @@ class GoogleCrawler():
         css_identifier_title = "h3"
         css_identifier_link = "yuRUbf"
         css_identifier_text = "VwiC3b"
-        soup = BeautifulSoup(response.text, 'html.parser')
+        try:
+            soup = BeautifulSoup(response.text, 'html.parser')
+        except requests.exceptions.RequestException as e:
+            soup = None
+            r = requests.get('http://localhost:8111/beautifulsoup_error')
         results = soup.findAll("div", {"class": css_identifier_result})
         output = []
         for result in results:
@@ -85,7 +90,11 @@ class GoogleCrawler():
     
     # 網頁解析器
     def html_parser(self,htmlText):
-        soup = BeautifulSoup(htmlText, 'html.parser')
+        try:
+            soup = BeautifulSoup(htmlText, 'html.parser')
+        except requests.exceptions.RequestException as e:
+            soup = None
+            r = requests.get('http://localhost:8111/beautifulsoup_error')
         return soup
     # 解析後，取<p>文字
     def html_getText(self,soup):
