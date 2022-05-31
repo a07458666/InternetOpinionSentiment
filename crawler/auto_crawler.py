@@ -7,11 +7,12 @@ import datetime
 import os
 import pathlib
 import yaml
+import requests
 
 CFG_DB_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), "config", "cfg_db.yaml")
 CFG_CRAWLER_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), "config", "cfg_crawler.yaml")
 
-class AutoCrawler():
+class AutoCrawler(GoogleCrawler):
     def __init__(self, useDB = True):
         super().__init__()
         self.db_cfg, self.keywords, self.whitelist = self.loadCfg()
@@ -35,12 +36,17 @@ class AutoCrawler():
         return end_result
 
     def run(self):
-        for query in self.keywords.items():
+        print(self.keywords)
+        for query in self.keywords:
             results = self.google_search(query , 'qdr:w' , self.url_count)
             for result in tqdm(results):
                 url = result["link"]
                 orignal_text = self.getTextbyURL(url)
-                end_results = self.countKeyWord(orignal_text)
+                try:
+                    r = requests.get('http://localhost:8111/search_url') # 需要加上try，因為在test的時候可能並沒有建立prometheus，會導致這行出錯
+                except requests.exceptions.RequestException as e:
+                    pass
+                end_results = self.countKeyWord(self.whitelist, orignal_text)
                 print("end_result : ", end_results)
                 for end_result in end_results:
                     self.sentToDb(end_result)

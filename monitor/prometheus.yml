@@ -19,3 +19,7 @@ scrape_configs:
     honor_labels: true
     static_configs:
       - targets: ['lab18-mongodb-exporter:9216']
+
+  - job_name: 'crawler_monitor'
+    static_configs:
+      - targets: [my-crawler:8777]
