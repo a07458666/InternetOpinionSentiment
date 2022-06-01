@@ -13,7 +13,7 @@ import paddle
 import pathlib
 import yaml
 # nltk.download()
-
+nltk.download('punkt')
 
 CONFIG_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), 'config', 'cfg_crawler.yaml')
 
