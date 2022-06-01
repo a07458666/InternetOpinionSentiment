@@ -53,13 +53,14 @@ services:
 
   lab18-crawler:
     build:
-      dockerfile: ../crawler/Dockerfile
-      context: .
+      dockerfile: Dockerfile
+      context: ../crawler
     networks:
         - mongonet
     # ports:
     #   - 8111:8111
     #   - 8777:8777
+    command: sleep infinity
 
   lab18-crawler-exporter:
     build:
