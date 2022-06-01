@@ -8,3 +8,4 @@ requests-html
 paddlepaddle
 pymongo
 jieba
+pyyaml
