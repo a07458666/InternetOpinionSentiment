@@ -1,6 +1,7 @@
 FROM python:3.6.15-slim
 COPY . /sample_crawler
 WORKDIR /sample_crawler
+RUN /usr/local/bin/python -m pip install --upgrade pip
 RUN pip install -r ./requirements.txt
 RUN apt-get update
 RUN apt-get update && apt-get install -y cron

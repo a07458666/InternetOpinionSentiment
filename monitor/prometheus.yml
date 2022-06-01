@@ -23,3 +23,12 @@ scrape_configs:
   - job_name: 'crawler_monitor'
     static_configs:
       - targets: [lab18-crawler-exporter:8777]
+
+  - job_name: 'api_server_monitor'
+    static_configs:
+      - targets: [api_server:3000]
+
+  - job_name: 'page_server_monitor'
+    static_configs:
+      - targets: [page_server:3000]
+      
