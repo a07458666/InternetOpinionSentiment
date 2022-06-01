@@ -6,6 +6,7 @@ describe('axio', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
   });
+
   // error test
   test('500', () => {
     mock = new MockAdapter(axio_instance)
@@ -43,7 +44,6 @@ describe('axio', () => {
       }
     }
     return axio_instance.get('getkeyword',dataRequest).then(data=>{
-      console.log(data)
       expect(data).toBeDefined();
     })
   });
