@@ -59,6 +59,9 @@ services:
     build:
       dockerfile: Dockerfile
       context: ../crawler
+    depends_on:
+      - lab18-prometheus
+      - lab18-crawler-exporter
     networks:
         - mongonet
     # ports:
@@ -72,12 +75,12 @@ services:
       context: .
     depends_on:
       - lab18-prometheus
-      - lab18-crawler
     networks:
         - mongonet
     ports:
       - 8111:8111
       - 8777:8777
+    container_name: lab18-crawler-exporter
 
 networks:
   mongonet:
