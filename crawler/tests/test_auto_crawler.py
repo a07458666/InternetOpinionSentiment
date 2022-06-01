@@ -19,12 +19,16 @@ def test_getTextbyURL():
     assert len(results) > 0
 
 def test_countKeyWord():
-    query = "TSMC ASML"
+    keywords = "TSMC ASML"
     whitelist = ['TSMC', 'ASML' , 'Intel']
     crawler = auto_crawler.AutoCrawler()
+    ret = crawler.setKeyword(keywords)
+    assert ret == 0
+    ret = crawler.setWhitelist(whitelist)
+    assert ret == 0
     target_url = 'https://www.reuters.com/technology/exclusive-ukraine-halts-half-worlds-neon-output-chips-clouding-outlook-2022-03-11/'
     orignal_text = crawler.getTextbyURL(target_url)
-    results = crawler.countKeyWord(whitelist, orignal_text)
+    results = crawler.countKeyWord(orignal_text)
     assert len(results) > 0
 
 def test_run():
@@ -32,6 +36,9 @@ def test_run():
     whitelist = ['TSMC']
     crawler = auto_crawler.AutoCrawler()
     ret = crawler.setKeyword(keywords)
+    assert ret == 0
+    ret = crawler.setWhitelist(whitelist)
+    assert ret == 0
     ret = crawler.run()
     assert ret == 0
 

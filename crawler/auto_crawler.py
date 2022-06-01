@@ -11,7 +11,7 @@ import yaml
 CFG_DB_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), "config", "cfg_db.yaml")
 CFG_CRAWLER_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), "config", "cfg_crawler.yaml")
 
-class AutoCrawler():
+class AutoCrawler(GoogleCrawler):
     def __init__(self, useDB = True):
         super().__init__()
         self.db_cfg, self.keywords, self.whitelist = self.loadCfg()
@@ -28,14 +28,14 @@ class AutoCrawler():
         print(orignal_text[:100])
         return orignal_text
 
-    def countKeyWord(self, whitelist, orignal_text)->dict:
+    def countKeyWord(self, orignal_text)->dict:
         result_wordcount = self.word_count(orignal_text)
         end_result = self.get_wordcount_json(self.whitelist , result_wordcount)
         # print(end_result)
         return end_result
 
     def run(self):
-        for query in self.keywords.items():
+        for query in self.keywords:
             results = self.google_search(query , 'qdr:w' , self.url_count)
             for result in tqdm(results):
                 url = result["link"]
@@ -74,6 +74,11 @@ class AutoCrawler():
     
     def setKeyword(self, keywords):
         self.keywords = keywords
+        return 0
+    
+    def setWhitelist(self, whitelist):
+        self.whitelist = whitelist
+        return 0
 
     def sentToDb(self, keywords_count_data):
         if (not self.useDB):

@@ -75,12 +75,16 @@ class GoogleCrawler():
         results = soup.findAll("div", {"class": css_identifier_result})
         output = []
         for result in results:
-            item = {
-                'title': result.find(css_identifier_title).get_text(),
-                'link': result.find("div", {"class": css_identifier_link}).find(href=True)['href'],
-                'text': result.find("div", {"class": css_identifier_text}).get_text()
-            }
-            output.append(item)
+            try:
+                    
+                item = {
+                    'title': result.find(css_identifier_title).get_text(),
+                    'link': result.find("div", {"class": css_identifier_link}).find(href=True)['href'],
+                    'text': result.find("div", {"class": css_identifier_text}).get_text()
+                }
+                output.append(item)
+            except:
+                continue
         return output
     
     # 網頁解析器
@@ -124,7 +128,7 @@ class GoogleCrawler():
         counts = dict()
         import jieba
         import re
-        paddle.enable_static()  # 我的版本需要加這個才能work?
+        # paddle.enable_static()  # 我的版本需要加這個才能work?
         jieba.enable_paddle()# 启动paddle模式。 0.40版之后开始支持，早期版本不支持
         for word in self.cfg.get('jieba_custom_dict'):
             jieba.add_word(word.strip())
