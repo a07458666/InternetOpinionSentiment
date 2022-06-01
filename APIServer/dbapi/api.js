@@ -27,7 +27,7 @@ function getkeyword(startTime, endTime){
             return utils.checkTimeFormat(endTime, asPromise=true, err_prefix='endTime error');
         })
         .then(() => {
-            const cfg = utils.loadCFG('cfg/db_cfg.json');
+            const cfg = utils.loadCFG('cfg/db_config.json');
             mongouri = `mongodb://${cfg.usr}:${cfg.pwd}@${cfg.uri}/${cfg.database_name}?authMechanism=DEFAULT`;
 
             return mongoose.createConnection(mongouri , {serverSelectionTimeoutMS: 5000, socketTimeoutMS: 10000}).asPromise();

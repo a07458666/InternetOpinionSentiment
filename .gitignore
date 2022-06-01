@@ -53,3 +53,5 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 node_modules/
+
+APIServer/cfg/db_config.json

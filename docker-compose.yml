@@ -1,0 +1,31 @@
+version: '3'
+services:
+  api_server:
+    build:
+      context: ./APIServer/
+      dockerfile: Dockerfile
+    container_name: api_server
+    restart: always
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "13000:3000"
+    networks:
+      - app-network
+  page_server:
+    build:
+      context: ./PageServer/
+      dockerfile: Dockerfile
+    container_name: page_server
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
