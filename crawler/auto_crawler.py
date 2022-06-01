@@ -45,7 +45,7 @@ class AutoCrawler(GoogleCrawler):
                     r = requests.get('http://localhost:8111/search_url') # 需要加上try，因為在test的時候可能並沒有建立prometheus，會導致這行出錯
                 except requests.exceptions.RequestException as e:
                     pass
-                end_results = self.countKeyWord(self.whitelist, orignal_text)
+                end_results = self.countKeyWord(orignal_text)
                 print("end_result : ", end_results)
                 for end_result in end_results:
                     self.sentToDb(end_result)
