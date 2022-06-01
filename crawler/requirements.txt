@@ -4,3 +4,8 @@ requests
 beautifulsoup4
 nltk
 openpyxl
+requests-html
+paddlepaddle
+pymongo
+jieba
+pyyaml==5.4.1

@@ -1,0 +1,87 @@
+version: '3.2'
+services:
+  lab18-prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      # Map port 9090 inside the container to port 19090 on the host
+      - 19090:9090
+    depends_on:
+      - lab18-mongodb-exporter
+    restart: always
+    networks:
+        - mongonet
+
+  lab18-grafana:
+    image: grafana/grafana:8.3.6
+    volumes:
+      - ./datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ./dashboard-provider.yml:/etc/grafana/provisioning/dashboards/dashboard-provider.yml
+      - ./dashboard-node-exporter.json:/var/lib/grafana/dashboards/demo/dashboard-node-exporter.json
+    depends_on:
+      - lab18-prometheus
+    ports:
+      - 13000:3000
+    networks:
+        - mongonet
+    
+  lab18-mongodb:
+    image: mongo
+    volumes: 
+      - ./mongodb:/data/db
+    ports:
+      - 27017:27017
+    environment:
+      # provide your credentials here
+      - MONGO_INITDB_ROOT_USERNAME=***
+      - MONGO_INITDB_ROOT_PASSWORD=***
+    networks:
+        - mongonet
+
+  lab18-mongodb-exporter:
+    image: percona/mongodb_exporter:0.32.0
+    restart: always
+    depends_on:
+      - lab18-mongodb
+    ports:
+      - 9216:9216
+    networks:
+      # - mongonet
+      mongonet:
+        aliases:
+        - 'mongodb-service'
+    command: --mongodb.uri mongodb://lab18:ec131b@lab18-mongodb:27017 --mongodb.collstats-colls=keyword_tab.keyword_col --compatible-mode=1
+
+  lab18-crawler:
+    build:
+      dockerfile: Dockerfile
+      context: ../crawler
+    depends_on:
+      - lab18-prometheus
+      - lab18-crawler-exporter
+    networks:
+        - mongonet
+    # ports:
+    #   - 8111:8111
+    #   - 8777:8777
+    command: sleep infinity
+
+  lab18-crawler-exporter:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    depends_on:
+      - lab18-prometheus
+    networks:
+        - mongonet
+    ports:
+      - 8111:8111
+      - 8777:8777
+    container_name: lab18-crawler-exporter
+
+networks:
+  mongonet:
+    driver: bridge

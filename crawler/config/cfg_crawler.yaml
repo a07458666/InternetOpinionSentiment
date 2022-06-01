@@ -1,0 +1,27 @@
+nltk_custom_dict:
+  - "Applied Materials"
+jieba_custom_dict:
+  - "台積電"
+  - "TSMC"
+  - "勝高株式會社"
+  - "SUMCO"
+  - "艾司摩爾"
+  - "ASML"
+  - "應用材料"
+  - "Applied Materials"
+  - "AMAT"
+keywords:
+  - "TSMC"
+  - "ASML"
+  - "SUMCO"
+  - "Applied Materials"
+whitelist:
+  - "台積電"
+  - "TSMC"
+  - "勝高株式會社"
+  - "SUMCO"
+  - "艾司摩爾"
+  - "ASML"
+  - "應用材料"
+  - "Applied Materials"
+  - "AMAT"

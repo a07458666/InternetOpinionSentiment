@@ -1,3 +1,4 @@
+import os
 import requests
 import urllib
 import pandas as pd
@@ -9,17 +10,23 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.tokenize import MWETokenizer
 import paddle
+import pathlib
+import yaml
 # nltk.download()
+nltk.download('corpora/stopwords')
+nltk.download('punkt')
+
+CONFIG_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), 'config', 'cfg_crawler.yaml')
 
 class GoogleCrawler():
     
     def __init__(self):
         self.url = 'https://www.google.com/search?q='    
+        with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
+            self.cfg = yaml.load(f, Loader=yaml.FullLoader)
     #  URL 萃取 From Google Search上 , using 第三方套件
     #  https://python-googlesearch.readthedocs.io/en/latest/
-    def google_url_search_byOpenSource(query,tbs='qdr:m',num=10):
-        array_url = [url for url in search('tsmc', tbs='qdr:m' , num=10)]
-        return array_url
+
     # 網路擷取器
     def get_source(self,url):
         try:
@@ -27,6 +34,7 @@ class GoogleCrawler():
             response = session.get(url)
             return response
         except requests.exceptions.RequestException as e:
+            r = requests.get('http://lab18-crawler-exporter:8111/search_fail', timeout=5)
             print(e)
     # URL 萃取 From Google Search上
     def scrape_google(self,query):
@@ -65,21 +73,33 @@ class GoogleCrawler():
         css_identifier_title = "h3"
         css_identifier_link = "yuRUbf"
         css_identifier_text = "VwiC3b"
-        soup = BeautifulSoup(response.text, 'html.parser')
+        try:
+            soup = BeautifulSoup(response.text, 'html.parser')
+        except requests.exceptions.RequestException as e:
+            soup = None
+            r = requests.get('http://lab18-crawler-exporter:8111/beautifulsoup_error', timeout=5)
         results = soup.findAll("div", {"class": css_identifier_result})
         output = []
         for result in results:
-            item = {
-                'title': result.find(css_identifier_title).get_text(),
-                'link': result.find("div", {"class": css_identifier_link}).find(href=True)['href'],
-                'text': result.find("div", {"class": css_identifier_text}).get_text()
-            }
-            output.append(item)
+            try:
+                    
+                item = {
+                    'title': result.find(css_identifier_title).get_text(),
+                    'link': result.find("div", {"class": css_identifier_link}).find(href=True)['href'],
+                    'text': result.find("div", {"class": css_identifier_text}).get_text()
+                }
+                output.append(item)
+            except:
+                continue
         return output
     
     # 網頁解析器
     def html_parser(self,htmlText):
-        soup = BeautifulSoup(htmlText, 'html.parser')
+        try:
+            soup = BeautifulSoup(htmlText, 'html.parser')
+        except requests.exceptions.RequestException as e:
+            soup = None
+            r = requests.get('http://lab18-crawler-exporter:8111/beautifulsoup_error', timeout=5)
         return soup
     # 解析後，取<p>文字
     def html_getText(self,soup):
@@ -89,7 +109,7 @@ class GoogleCrawler():
         return orignal_text
     
     def word_count(self, text):
-        text = text.lower()
+        # text = text.lower()
         if self.is_contains_chinese(text):
             counts = self.word_count_ch(text)
         else:
@@ -100,7 +120,10 @@ class GoogleCrawler():
         counts = dict()
         stop_words = set(stopwords.words('english'))
         words = word_tokenize(text)
-        tokenizer = MWETokenizer([('applied', 'materials'), ('applied', 'material')], separator=' ')
+        custom_dict = []
+        for word in self.cfg.get('nltk_custom_dict'):
+            custom_dict.append(tuple(word.split()))
+        tokenizer = MWETokenizer(custom_dict, separator=' ')
         words = tokenizer.tokenize(words)
         #words = text.replace(',','').split()
         for word in words:
@@ -114,9 +137,12 @@ class GoogleCrawler():
     def word_count_ch(self, text):
         counts = dict()
         import jieba
-        paddle.enable_static()  # 我的版本需要加這個才能work?
+        import re
+        # paddle.enable_static()  # 我的版本需要加這個才能work?
         jieba.enable_paddle()# 启动paddle模式。 0.40版之后开始支持，早期版本不支持
-        jieba.load_userdict('config/custom_dict.txt')
+        for word in self.cfg.get('jieba_custom_dict'):
+            jieba.add_word(word.strip())
+        jieba.re_han_default = re.compile('(.+)', re.U) # 讓jieba可識別applied materials
         words = jieba.cut(text, cut_all=False)
         # print(", ".join(words))
         for word in words:
@@ -146,34 +172,9 @@ class GoogleCrawler():
                 }
                 data_array.append(json_data)
         return data_array
-
-    def jsonarray_toexcel(self,data_array):
-        df = pd.DataFrame(data=data_array)
-        df.to_excel('result.xlsx' , index=False)
-        return
     
     def is_contains_chinese(self, strs):
         for _char in strs:
             if '\u4e00' <= _char <= '\u9fa5':
                 return True
         return False
-    
-if __name__ == "__main__":
-    query = "TSMC ASML"
-    crawler = GoogleCrawler()
-    results = crawler.google_search(query , 'qdr:w' , '10')
-    print(results[:3])
-    # Target_URL = 'https://taipeitimes.com/News/biz/archives/2022/01/20/2003771688'
-    Target_URL = 'https://udn.com/news/story/7240/6046136'  # 測試中文新聞
-    response = crawler.get_source(Target_URL)
-    soup = crawler.html_parser(response.text)
-    orignal_text = crawler.html_getText(soup)
-    print(orignal_text[:100])
-    result_wordcount = crawler.word_count(orignal_text)
-    result_wordcount
-    # whitelist = ['ASML' , 'Intel']
-    whitelist = ['asml' , 'intel', '艾司摩爾', '台積電', 'tsmc']
-    end_result = crawler.get_wordcount_json(whitelist , result_wordcount)
-    print(end_result)
-    crawler.jsonarray_toexcel(end_result)
-    print('Excel is OK')
