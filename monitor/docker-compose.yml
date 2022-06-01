@@ -34,6 +34,10 @@ services:
       - ./mongodb:/data/db
     ports:
       - 27017:27017
+    environment:
+      # provide your credentials here
+      - MONGO_INITDB_ROOT_USERNAME=***
+      - MONGO_INITDB_ROOT_PASSWORD=***
     networks:
         - mongonet
 
