@@ -42,7 +42,7 @@ class AutoCrawler(GoogleCrawler):
                 url = result["link"]
                 orignal_text = self.getTextbyURL(url)
                 try:
-                    r = requests.get('http://lab18-crawler-exporter:8111/search_url') # 需要加上try，因為在test的時候可能並沒有建立prometheus，會導致這行出錯
+                    r = requests.get('http://lab18-crawler-exporter:8111/search_url', timeout=5) # 需要加上try，因為在test的時候可能並沒有建立prometheus，會導致這行出錯
                 except requests.exceptions.RequestException as e:
                     pass
                 end_results = self.countKeyWord(orignal_text)
