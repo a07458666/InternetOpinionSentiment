@@ -6,10 +6,13 @@ var logger = require('morgan');
 
 const prom_client = require('prom-client');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 var apiRouter = require('./routes/api');
 
 var app = express();
+
+app.use(cors());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
