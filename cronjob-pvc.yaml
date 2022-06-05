@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  namespace: default
+  name: cron-crawler
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: write-file
+            image: a07458666/lab18-crawler:latest
+            volumeMounts:
+            - name: history-dir
+              mountPath: /var/log/history
+          restartPolicy: OnFailure
+          volumes:
+          - name: history-dir
+            persistentVolumeClaim:
+              claimName: pvc-lab18
