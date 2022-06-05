@@ -9,10 +9,11 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.tokenize import MWETokenizer
-import paddle
+# import paddle
 import pathlib
 import yaml
 # nltk.download()
+
 nltk.download('corpora/stopwords')
 nltk.download('punkt')
 
