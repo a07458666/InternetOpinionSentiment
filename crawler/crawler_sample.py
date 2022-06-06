@@ -33,10 +33,10 @@ class GoogleCrawler():
     def get_source(self,url):
         try:
             session = HTMLSession()
-            ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0'
-            response = session.get(url, headers={'user-agent': ua})
+            response = session.get(url)
             print("response : ", response)
             if response.status_code == 429:
+                r = requests.get('http://lab18-crawler-exporter:8111/search_url_429', timeout=5)
                 time.sleep(5)
             return response
         except requests.exceptions.RequestException as e:
