@@ -12,10 +12,11 @@ from nltk.tokenize import MWETokenizer
 # import paddle
 import pathlib
 import yaml
+import time
 # nltk.download()
 
-nltk.download('corpora/stopwords')
 nltk.download('punkt')
+nltk.download('stopwords')
 
 CONFIG_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), 'config', 'cfg_crawler.yaml')
 
@@ -33,9 +34,19 @@ class GoogleCrawler():
         try:
             session = HTMLSession()
             response = session.get(url)
+            print("response : ", response)
+            if response.status_code == 429:
+                try:
+                    r = requests.get('http://lab18-crawler-exporter:8111/search_url_429', timeout=5)
+                except requests.exceptions.RequestException as e:
+                    pass
+                time.sleep(1)
             return response
         except requests.exceptions.RequestException as e:
-            r = requests.get('http://lab18-crawler-exporter:8111/search_fail', timeout=5)
+            try:
+                r = requests.get('http://lab18-crawler-exporter:8111/search_fail', timeout=5)
+            except requests.exceptions.RequestException as e:
+                    pass
             print(e)
     # URL 萃取 From Google Search上
     def scrape_google(self,query):
@@ -78,7 +89,11 @@ class GoogleCrawler():
             soup = BeautifulSoup(response.text, 'html.parser')
         except requests.exceptions.RequestException as e:
             soup = None
-            r = requests.get('http://lab18-crawler-exporter:8111/beautifulsoup_error', timeout=5)
+            try: 
+                r = requests.get('http://lab18-crawler-exporter:8111/beautifulsoup_error', timeout=5)
+            except requests.exceptions.RequestException as e:
+                pass
+            print(e)
         results = soup.findAll("div", {"class": css_identifier_result})
         output = []
         for result in results:
@@ -91,6 +106,7 @@ class GoogleCrawler():
                 }
                 output.append(item)
             except:
+                print(e)
                 continue
         return output
     
@@ -100,7 +116,11 @@ class GoogleCrawler():
             soup = BeautifulSoup(htmlText, 'html.parser')
         except requests.exceptions.RequestException as e:
             soup = None
-            r = requests.get('http://lab18-crawler-exporter:8111/beautifulsoup_error', timeout=5)
+            try:
+                r = requests.get('http://lab18-crawler-exporter:8111/beautifulsoup_error', timeout=5)
+            except requests.exceptions.RequestException as e:
+                pass
+            print(e)
         return soup
     # 解析後，取<p>文字
     def html_getText(self,soup):

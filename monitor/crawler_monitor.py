@@ -29,6 +29,11 @@ class DemoHandler(http.server.BaseHTTPRequestHandler):
       self.send_response(200)
       self.end_headers()
       self.wfile.write(b"Search url Success.\n")
+    elif (tokens[1] == 'search_url_429'):
+      REQUESTS_COUNTER.labels(tokens[1], 429).inc()
+      self.send_response(429)
+      self.end_headers()
+      self.wfile.write(b"Search url 429!\n")
     elif (tokens[1] == 'beautifulsoup_error'):
       REQUESTS_COUNTER.labels(tokens[1], 511).inc()
       self.send_response(501)
