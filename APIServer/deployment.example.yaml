@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+  labels:
+    app: api-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-server
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: api-server
+    spec:
+      containers:
+      - name: api-server
+        image: your/image
+        command:
+        - sh
+        - -c
+        - echo "{\"uri\":\"urlhere\",\"usr\":\"usr\",\"pwd\":\"pwd\",\"database_name\":\"name\",\"collection_name\":\"collection\"}" > cfg/db_config.json;npm run start 
+        ports:
+        - containerPort: 3000

@@ -66,7 +66,7 @@ app.use(function(req, res,next){
 });
 
 // Setup server to Prometheus scrapes:
-app.get('/metrics', async (req, res) => {
+app.get('/api/metrics', async (req, res) => {
 	try {
 		res.set('Content-Type', register.contentType);
 		res.end(await register.metrics());
@@ -76,7 +76,11 @@ app.get('/metrics', async (req, res) => {
 });
 
 // route
-app.use('/', apiRouter);
+app.get('/', function(req, res, next) {
+  res.status(200).json({});
+});
+
+app.use('/api', apiRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

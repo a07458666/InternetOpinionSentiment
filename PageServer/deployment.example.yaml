@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: page-server
+  labels:
+    app: page-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: page-server
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: page-server
+    spec:
+      containers:
+      - name: page-server
+        image: your/image
+        command:
+        - sh
+        - -c
+        - cd my-app; echo "{\"API_URL\":\"/api/\"}"> src/config.json; NODE_OPTIONS=--openssl-legacy-provider npm run build;cp -r ./build ..;cd ..;npm run start 
+        ports:
+        - containerPort: 3000
