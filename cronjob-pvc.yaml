@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
           - name: write-file
-            image: a07458666/lab18-crawler:latest
+            image: chashaoan/auto_crawler:2.0.7
             volumeMounts:
             - name: history-dir
               mountPath: /var/log/history
