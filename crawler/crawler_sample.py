@@ -12,10 +12,11 @@ from nltk.tokenize import MWETokenizer
 # import paddle
 import pathlib
 import yaml
+import time
 # nltk.download()
 
-nltk.download('corpora/stopwords')
 nltk.download('punkt')
+nltk.download('stopwords')
 
 CONFIG_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), 'config', 'cfg_crawler.yaml')
 
@@ -32,7 +33,11 @@ class GoogleCrawler():
     def get_source(self,url):
         try:
             session = HTMLSession()
-            response = session.get(url)
+            ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0'
+            response = session.get(url, headers={'user-agent': ua})
+            print("response : ", response)
+            if response.status_code == 429:
+                time.sleep(5)
             return response
         except requests.exceptions.RequestException as e:
             r = requests.get('http://lab18-crawler-exporter:8111/search_fail', timeout=5)
@@ -79,6 +84,7 @@ class GoogleCrawler():
         except requests.exceptions.RequestException as e:
             soup = None
             r = requests.get('http://lab18-crawler-exporter:8111/beautifulsoup_error', timeout=5)
+            print(e)
         results = soup.findAll("div", {"class": css_identifier_result})
         output = []
         for result in results:
@@ -91,6 +97,7 @@ class GoogleCrawler():
                 }
                 output.append(item)
             except:
+                print(e)
                 continue
         return output
     
@@ -101,6 +108,7 @@ class GoogleCrawler():
         except requests.exceptions.RequestException as e:
             soup = None
             r = requests.get('http://lab18-crawler-exporter:8111/beautifulsoup_error', timeout=5)
+            print(e)
         return soup
     # 解析後，取<p>文字
     def html_getText(self,soup):
