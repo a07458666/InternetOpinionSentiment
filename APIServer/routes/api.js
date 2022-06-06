@@ -13,7 +13,7 @@ router.get('/getkeyword', function(req, res) {
 
   db.getkeyword(startTime, endTime).then(ret => {
     if(ret.status=='error'){
-      res.status(500).json(ret);
+      res.status(200).json(ret);
     }
     else{
       res.json(ret);
