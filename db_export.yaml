@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crawler-deployment
+  labels:
+    app: mongodb-exporter
+  namespace: lab18
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb-exporter
+  template:
+    metadata:
+      labels:
+        app: mongodb-exporter
+    spec:
+      imagePullSecrets: 
+        - name: myregistrykey
+      containers:
+      - name: mongodb_exporter
+        # image: mongo:latest
+        args: ["--web.listen-address=:9216", "--mongodb.uri", "mongodb://lab18:ec131b@140.113.215.98:27017", "--mongodb.collstats-colls=keyword_tab.keyword_col", "--compatible-mode=1"]
+        image: percona/mongodb_exporter:0.32.0
+        ports:
+        - containerPort: 9216
+          name: mongodb-exporter
+        resources:
+          requests:
+            cpu: 1
+            memory: 1Gi
+          limits:
+            cpu: 1
+            memory: 1Gi
