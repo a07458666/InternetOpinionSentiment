@@ -50,4 +50,30 @@ export default class DataAdapter{
         }
         return lineDataList    
     }
+
+    static keywordDataToWorldCloudData(keywordDataList){
+
+        const companyset = new Set(keywordDataList.map(value => value.company))
+        let max_cnt = null
+        let min_cnt = null
+
+        const tmp_list = Array.from(companyset).map(cmp=>{
+            let total_count = 0
+            keywordDataList
+                .filter(({company})=> company === cmp)
+                .forEach(({count})=>{total_count+=count})
+        
+            if(max_cnt === null || total_count > max_cnt) max_cnt = total_count
+            if(min_cnt === null || total_count < min_cnt) min_cnt = total_count
+
+            return {company:cmp,count:total_count}
+        })
+
+        return tmp_list.map(({company, count})=>{
+            const weight =  Math.round( (count - min_cnt) / (max_cnt - min_cnt) * 7 + 3)
+            const value = company
+            return [value,weight,count]
+        })
+          
+    }
 }
