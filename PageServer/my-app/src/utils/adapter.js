@@ -22,18 +22,31 @@ export default class DataAdapter{
     }  
 
     // Adapte to LineDataList for LineChart 
-    static keywordDataToLineData(keywordDataList){
+    static keywordDataToLineData(keywordDataList,startTime,endTime){
         const timeset = new Set(keywordDataList.map(value => value.date))
+        const companyset = new Set(keywordDataList.map(value => value.company))
         let lineDataList = []
+    
+        if(startTime && !timeset.has(startTime)){
+            let obj = {date:moment(startTime).format('MM-DD')}
+            companyset.forEach(company=>{obj[company] = 0})
+            lineDataList.push(obj)
+        }
+        
         for (let etime of timeset) {
-            let obj = {date:etime}
+            let obj = {date:moment(etime).format('MM-DD')}
             for ( let el of keywordDataList){
                 const {company, count, date} = el
                 if(date === etime)
                     obj[company] = count
             }
+            lineDataList.push(obj)   
+        }
+
+        if(endTime && !timeset.has(endTime)){
+            let obj = {date:moment(endTime).format('MM-DD')}
+            companyset.forEach(company=>{obj[company] = 0})
             lineDataList.push(obj)
-            
         }
         return lineDataList    
     }

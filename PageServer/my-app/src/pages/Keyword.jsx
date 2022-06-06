@@ -41,54 +41,52 @@ export default function Keyword() {
         }
     
     },[startTime,endTime])
-
+ 
     useEffect(()=>{
-        const data =  DataAdapter.keywordDataToLineData(keywordData)
+        if(keywordData.length === 0)return setLineData([])
+        const data =  DataAdapter.keywordDataToLineData(keywordData,startTime,endTime)
         setLineData(data);
         return () => {
             setLineData([])  
         }
-    },[keywordData])
+    },[keywordData,startTime,endTime])
     
     return (
         <>
-           
             <div style={{justifyContent:"center",paddingTop:10,marginBottom:20}}>
                 <div><span>KEYWORD</span></div>
                 <Space direction="vertical" size={'large'}>
                     <RangePicker format={TIME_FORMAT}  value={[moment(startTime),moment(endTime)]} onChange={onDatePickerChange}/>
                 </Space>
                
-                
-                {
-                    (lineData.length!== 0) 
-
-                    ?   
-                        <LineChart 
-                                width={900}
-                                height={350}
-                                role="linechart"
-                                data={lineData}
-                                margin={{ top: 20 , right: 30, left: 20, bottom: 5 }}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="date" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            { 
-                                Object.keys(Object.values(lineData)[0])
-                                    .filter(kname=> kname!== 'date' && kname !== '')
-                                    .map((kname,idx)=><Line name={kname} key={kname} type="monotone" dataKey={kname} stroke={getRandomColor()} />)
-                            }
-                        
-                        </LineChart>
-                    :   <div style={{display: 'flex',alignItems:'center',justifyContent:"center",width:'900px', height:'350px',border:'whitesmoke 1px dashed',marginTop:'20px'}}>
-                            <h1 style={{color:"white"}}>No Data</h1>
-                        </div>
-               
-                }
+                { renderLineChart(lineData) }
                
             </div>
         </>
     )
 }
+
+function renderLineChart(lineData) {
+    return (lineData.length !== 0)
+        ?
+        <LineChart
+            width={900}
+            height={350}
+            role="linechart"
+            data={lineData}
+            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3" />
+            <XAxis padding={{ left: 50, right: 50 }} dataKey="date" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            {Object.keys(Object.values(lineData)[0])
+                .filter(kname => kname !== 'date' && kname !== '')
+                .map((kname, idx) => <Line name={kname} key={kname} type="monotone" dataKey={kname} stroke={getRandomColor()} />)}
+
+        </LineChart>
+        : <div style={{ display: 'flex', alignItems: 'center', justifyContent: "center", width: '900px', height: '350px', border: 'whitesmoke 1px dashed', marginTop: '20px' }}>
+            <h1 style={{ color: "white" }}>No Data</h1>
+        </div>;
+}
+
