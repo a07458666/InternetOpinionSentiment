@@ -82,6 +82,7 @@ services:
       - 8777:8777
     container_name: lab18-crawler-exporter
 
+  # Need Add APIServer/cfg/db_config.json First
   api_server:
     build:
       context: ./APIServer/
@@ -95,6 +96,7 @@ services:
     networks:
       - app-network
       
+  # Need Add PageServer/my-app/src/config.json First
   page_server:
     build:
       context: ./PageServer/
@@ -107,7 +109,7 @@ services:
     command: 
         - sh
         - -c
-        - cd my-app; echo "{\"API_URL\":\"/api/\"}"> src/config.json; NODE_OPTIONS=--openssl-legacy-provider npm run build;cp -r ./build ..;cd ..;npm run start 
+        - cd my-app;NODE_OPTIONS=--openssl-legacy-provider npm run build;cp -r ./build ..;cd ..;npm run start 
     ports:
       - "3000:3000"
     networks:
