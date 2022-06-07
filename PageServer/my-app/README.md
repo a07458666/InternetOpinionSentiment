@@ -1,3 +1,25 @@
+# View
+顯示聲量統計：
+
+![](demo1.png)
+
+顯示區間聲量總和的公司：
+
+![](demo2.png)
+
+# Architecture
+public/: static files
+
+src/ : source code
+
+# Testing 
+```
+npm run test -- coverage
+```
+
+![](testing.jpg)
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
