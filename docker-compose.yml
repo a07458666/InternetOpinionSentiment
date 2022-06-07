@@ -104,7 +104,10 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-    command: bash -c 'cd my-app; echo "{\"API_URL\":\"/api/\"}"> src/config.json; NODE_OPTIONS=--openssl-legacy-provider npm run build;cp -r ./build ..;cd ..;npm run start '
+    command: 
+        - sh
+        - -c
+        - cd my-app; echo "{\"API_URL\":\"/api/\"}"> src/config.json; NODE_OPTIONS=--openssl-legacy-provider npm run build;cp -r ./build ..;cd ..;npm run start 
     ports:
       - "3000:3000"
     networks:
