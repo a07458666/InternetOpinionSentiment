@@ -1,16 +1,8 @@
-# run
+## Auto Run
 ```bash
 python auto_crawler.py
 ```
 
-# Pytest
-```bash
-python -m pytest . tests --doctest-modules --junitxml=test-results.xml --cov-config=.coveragerc --cov=. --cov-report=html
-```
-Coverage結果，會放在htmlcov 資料夾
-
-
-# TSMC_NYCU_SAMPLE 期末專題，範例程式碼
 
 ## 程式使用情境
 ### 1. 用程式去呼叫Google網頁伺服器，然後將顯示出來的URL，抓出來。 (支援換頁及限縮搜尋時間)
