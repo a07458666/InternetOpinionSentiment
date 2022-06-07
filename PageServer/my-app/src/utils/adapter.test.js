@@ -16,7 +16,7 @@ describe('DataAdapter', () => {
       ]
       expect(DataAdapter.rawDataToKeyWordData(TEST_DATA)).toBeTruthy();
   });
-  test('keywordDataToLineData', () => {
+  test('keywordDataToLineData,keywordDataToWorldCloudData', () => {
       const TEST_DATA = [
           {
             "Timestamp": "2022-05-11T08:44:07.245Z",
@@ -211,6 +211,7 @@ describe('DataAdapter', () => {
         
       
       expect(DataAdapter.keywordDataToLineData(TEST_DATA)).toBeTruthy();
+      expect(DataAdapter.keywordDataToWorldCloudData(TEST_DATA)).toBeTruthy();
   });
 });
 
