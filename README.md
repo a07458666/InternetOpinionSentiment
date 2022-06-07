@@ -14,22 +14,16 @@ Lab18
 [Crawler](https://github.com/a07458666/InternetOpinionSentiment/blob/main/crawler/README.md)
 
 ### Frontend
-[Frontend]()
+[Frontend](/PageServer/Readme.md)
 ### Backend
 [Backend]()
 
 ### Build step:
-#### 1
-```
-# 前後端build code
-cp APIServer/cfg/db_config.example.json  APIServer/cfg/db_config.json
-edit APIServer/cfg/db_config.json
-cp fontend/my-app/src/config.example.json fontend/my-app/src/config.json
-edit fontend/my-app/src/config.json
-sh build.sh
-```
-#### 2
-使用docker build各個image，並上傳至docker hub
+Two Choice For Deploy
 
-#### 3
-在GKE上安裝Prometheus和Grafana，並apply各個deploment和service.yaml
+#### Deploy to GKE (K8s)
+    1. 使用docker build各個image，並上傳至docker hub
+    2. 在GKE上安裝Prometheus和Grafana，並apply各個deploment和service.yaml
+#### Use Docker to Deploy
+    1. 修改各個config
+    2. docker-comopose up 
