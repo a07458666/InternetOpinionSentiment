@@ -1,6 +1,7 @@
 
 # Architecture
 PageServer/my-app/ : fontend project (power by reactJS)
+
 PageServer/: page server project (power by expressJS)
 
 # Debuging
@@ -10,7 +11,7 @@ cd PageServer/my-app/
 
 npm install && npm run start
 ```
-[see more detail](./my-app/Readme.md)
+[see more detail](/PageServer/my-app/README.md)
 ## page server
 ```
 cd PageServer
