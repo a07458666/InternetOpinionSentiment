@@ -70,7 +70,7 @@ export default function Keyword() {
     return (
         <>
             <div style={{justifyContent:"center",paddingTop:10,marginBottom:20}}>
-                <div><span>KEYWORD</span></div>
+                <div><span>聲量統計</span></div>
                 
                 <div >
                         
@@ -96,9 +96,10 @@ function TextCloud({cloudData}){
     useEffect(()=>{
         if(cloudData.length === 0)return 
         const wordCloudConfig={
-            gridSize: Math.round(16 * cloudRef.current.width / 1024),
+            gridSize: Math.round(16 * cloudRef.current.width/1800),
             weightFactor: function (size) {
-                return Math.pow(size, 2.3) * cloudRef.current.width / 1024;
+                console.log(size)
+                return Math.pow(size, 2.3) * cloudRef.current.width /1800;
             },
             fontFamily: 'Times, serif',
             color: function (word, weight) {
@@ -116,7 +117,7 @@ function TextCloud({cloudData}){
             WordCloud.stop();
         };
     },[cloudData,cloudRef])
-    return <canvas width="1800" height="700" style={{width:900,height:400}} ref={cloudRef}></canvas>
+    return <canvas width="1800" height="800" style={{width:900,height:400}} ref={cloudRef}></canvas>
 }
 function LineChartSpace({lineData}) {
     return (lineData.length !== 0)

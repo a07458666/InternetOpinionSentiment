@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "聲量統計Web",
+  "name": "聲量統計Web",
   "icons": [
     {
       "src": "favicon.ico",

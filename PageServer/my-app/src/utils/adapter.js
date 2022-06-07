@@ -70,7 +70,10 @@ export default class DataAdapter{
         })
 
         return tmp_list.map(({company, count})=>{
-            const weight =  Math.round( (count - min_cnt) / (max_cnt - min_cnt) * 7 + 3)
+            let weight =  Math.round( (count - min_cnt) / (max_cnt - min_cnt) * 7 + 3)
+            weight = parseInt(weight / 2) * 2 
+            if(weight <= 2) weight += 2
+            console.log(`${company} - ${weight}`)
             const value = company
             return [value,weight,count]
         })
